@@ -1,8 +1,10 @@
 const express = require('express');
 const morgan = require('morgan');
+const dotenv = require('dotenv');
 const { NotFoundError, errorHandler, currentUser } = require('@sgjobfit/common');
-const config = require('./config');
 const logger = require('./utils/logger');
+
+dotenv.config();
 
 const app = express();
 app.use(express.json());
@@ -19,7 +21,7 @@ app.all('*', (req, res, next) => {
 });
 app.use(errorHandler);
 
-const PORT = config.port || 5000;
+const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => logger.info(`Server started on port ${PORT}`));
 
 module.exports = app;
