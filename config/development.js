@@ -1,5 +1,11 @@
 module.exports = {
-  mongoURL:
-    'mongodb+srv://admin:admin@dagkcluster-3ulal.mongodb.net/test?retryWrites=true&w=majority',
+  postgresSQL: {
+    host: 'raja.db.elephantsql.com',
+    port: 5432,
+    database: 'ebwxatal',
+    username: 'ebwxatal',
+    password: 'J9EIw1wZd9_FvMtLrIlvtN2pUWtqq4bE',
+    dialect: 'postgres',
+  },
   baseUrl: 'localhost:5000',
 };

@@ -12,6 +12,8 @@ require('express-async-errors');
 app.use(morgan('dev'));
 
 app.use(currentUser);
+app.use('/api/v1/admin', require('./routes'));
+
 app.all('*', (req, res, next) => {
   throw new NotFoundError();
 });
