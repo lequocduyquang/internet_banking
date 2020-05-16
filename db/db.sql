@@ -1,4 +1,4 @@
-CREATE TABLE "Customer" (
+CREATE TABLE "customer" (
   "id" SERIAL PRIMARY KEY,
   "username" VARCHAR(50),
   "email" VARCHAR(50),
@@ -9,15 +9,19 @@ CREATE TABLE "Customer" (
   "created_at" DATE,
   "updated_at" DATE
 );
+CREATE INDEX ON "customer" ("id");
 
-CREATE TABLE "Partner" (
+
+CREATE TABLE "partner" (
   "id" SERIAL,
   "code" VARCHAR(50) PRIMARY KEY,
   "created_at" DATE,
   "updated_at" DATE
 );
+CREATE INDEX ON "partner" ("id");
 
-CREATE TABLE "Employee" (
+
+CREATE TABLE "employee" (
   "id" SERIAL PRIMARY KEY,
   "username" VARCHAR(50),
   "email" VARCHAR(50),
@@ -25,8 +29,10 @@ CREATE TABLE "Employee" (
   "created_at" DATE,
   "updated_at" DATE
 );
+CREATE INDEX ON "employee" ("id");
 
-CREATE TABLE "Admin" (
+
+CREATE TABLE "admin" (
   "id" SERIAL PRIMARY KEY,
   "username" VARCHAR(50),
   "email" VARCHAR(50),
@@ -34,8 +40,9 @@ CREATE TABLE "Admin" (
   "created_at" DATE,
   "updated_at" DATE
 );
+CREATE INDEX ON "admin" ("id");
 
-CREATE TABLE "TransactionLog" (
+CREATE TABLE "transaction_log" (
   "id" SERIAL PRIMARY KEY,
   "transaction_type" INT,
   "transaction_method" INT,
@@ -43,18 +50,19 @@ CREATE TABLE "TransactionLog" (
   "is_notified" BOOLEAN,
   "sender_account_number" VARCHAR(50),
   "receiver_account_number" VARCHAR(50),
-  "amount" DOUBLE,
+  "amount" FLOAT,
   "message" VARCHAR(100),
   "parner_code" VARCHAR(100),
   "created_at" DATE,
   "updated_at" DATE
 );
+CREATE INDEX ON "transaction_log" ("id");
 
-CREATE TABLE "TransactionType" (
+CREATE TABLE "transaction_type" (
   "id" SERIAL PRIMARY KEY,
   "type" VARCHAR(50)
 );
 
-ALTER TABLE "TransactionType" ADD FOREIGN KEY ("id") REFERENCES "TransactionLog" ("transaction_type");
+ALTER TABLE "transaction_log" ADD FOREIGN KEY ("transaction_type") REFERENCES "transaction_type" ("id");
 
-ALTER TABLE "TransactionLog" ADD FOREIGN KEY ("parner_code") REFERENCES "Partner" ("code");
+ALTER TABLE "transaction_log" ADD FOREIGN KEY ("parner_code") REFERENCES "partner" ("code");
