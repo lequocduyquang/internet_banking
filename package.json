@@ -1,0 +1,47 @@
+{
+  "name": "internet-banking",
+  "version": "1.0.0",
+  "description": "DA Web NC",
+  "main": "app.js",
+  "repository": "https://quangle2006@gitlab.com/webnc1/internet-banking.git",
+  "author": "lequocduyquang",
+  "license": "MIT",
+  "scripts": {
+    "start": "node app.js",
+    "dev": "npx nodemon app.js"
+  },
+  "devDependencies": {
+    "eslint": "^7.0.0",
+    "eslint-config-airbnb": "18.1.0",
+    "eslint-config-node": "^4.0.0",
+    "eslint-config-prettier": "^6.11.0",
+    "eslint-plugin-import": "^2.20.1",
+    "eslint-plugin-jsx-a11y": "^6.2.3",
+    "eslint-plugin-node": "^11.1.0",
+    "eslint-plugin-prettier": "^3.1.3",
+    "eslint-plugin-react": "^7.19.0",
+    "eslint-plugin-react-hooks": "2.5.0",
+    "husky": "^4.2.5",
+    "lint-staged": "^10.2.2",
+    "prettier": "^2.0.5"
+  },
+  "lint-staged": {
+    "*.js": [
+      "./node_modules/.bin/prettier",
+      "./node_modules/.bin/eslint --config .eslintrc.json --fix .",
+      "git add"
+    ]
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged"
+    }
+  },
+  "dependencies": {
+    "@sgjobfit/common": "^1.0.6",
+    "express": "^4.17.1",
+    "express-async-errors": "^3.1.1",
+    "morgan": "^1.10.0",
+    "winston": "^3.2.1"
+  }
+}
