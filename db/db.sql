@@ -1,8 +1,8 @@
 CREATE TABLE "customer" (
   "id" SERIAL PRIMARY KEY,
-  "username" VARCHAR(50),
-  "email" VARCHAR(50),
-  "password" VARCHAR(50),
+  "username" VARCHAR(512),
+  "email" VARCHAR(512),
+  "password" VARCHAR(512),
   "account_number" VARCHAR(50),
   "phone" VARCHAR(50),
   "address" VARCHAR(50),
@@ -14,7 +14,7 @@ CREATE INDEX ON "customer" ("id");
 
 CREATE TABLE "partner" (
   "id" SERIAL,
-  "code" VARCHAR(50) PRIMARY KEY,
+  "code" VARCHAR(100) PRIMARY KEY,
   "created_at" timestamp DEFAULT now(),
   "updated_at" timestamp DEFAULT now()
 );
@@ -23,9 +23,9 @@ CREATE INDEX ON "partner" ("id");
 
 CREATE TABLE "employee" (
   "id" SERIAL PRIMARY KEY,
-  "username" VARCHAR(50),
-  "email" VARCHAR(50),
-  "password" VARCHAR(50),
+  "username" VARCHAR(512),
+  "email" VARCHAR(512),
+  "password" VARCHAR(512),
   "created_at" timestamp DEFAULT now(),
   "updated_at" timestamp DEFAULT now()
 );
@@ -34,9 +34,9 @@ CREATE INDEX ON "employee" ("id");
 
 CREATE TABLE "admin" (
   "id" SERIAL PRIMARY KEY,
-  "username" VARCHAR(50),
-  "email" VARCHAR(50),
-  "password" VARCHAR(50),
+  "username" VARCHAR(512),
+  "email" VARCHAR(512),
+  "password" VARCHAR(512),
   "created_at" timestamp DEFAULT now(),
   "updated_at" timestamp DEFAULT now()
 );

@@ -1,12 +1,13 @@
 const { BadRequestError } = require('@sgjobfit/common');
 const Employee = require('../models/employee.model');
 const Admin = require('../models/admin.model');
+const Customer = require('../models/customer.model');
 
 const registerEmployee = async (req, res, next) => {
   try {
     const { username, email, password } = req.body;
     const existedEmployee = await Employee.findOne({
-      email,
+      where: { email: email },
     });
     if (existedEmployee) {
       throw new BadRequestError('Employee is already exists');
@@ -29,7 +30,7 @@ const registerAdmin = async (req, res, next) => {
   try {
     const { username, email, password } = req.body;
     const checkUser = await Admin.findOne({
-      email,
+      where: { email: email },
     });
     if (checkUser) {
       throw new BadRequestError('Admin is alreay exists');
@@ -39,7 +40,6 @@ const registerAdmin = async (req, res, next) => {
       username,
       email,
       password,
-      role_id: 1,
     });
 
     res.status(201).send({
@@ -50,7 +50,33 @@ const registerAdmin = async (req, res, next) => {
   }
 };
 
+const registerCustomer = async (req, res, next) => {
+  try {
+    const { username, email, password, phone } = req.body;
+    const checkUser = await Admin.findOne({
+      where: { phone: phone },
+    });
+    if (checkUser) {
+      throw new BadRequestError('Customer is alreay exists');
+    }
+
+    const customer = await Customer.create({
+      username,
+      email,
+      password,
+      phone,
+    });
+
+    res.status(201).send({
+      customer_created: customer,
+    });
+  } catch (error) {
+    next(new BadRequestError(error.message));
+  }
+};
+
 module.exports = {
   registerEmployee,
   registerAdmin,
+  registerCustomer,
 };

@@ -1,5 +1,7 @@
+/* eslint-disable no-param-reassign */
 const sequelizePaginate = require('sequelize-paginate');
 const Sequelize = require('sequelize');
+const bcrypt = require('bcrypt');
 const db = require('../libs/postgres');
 
 const Employee = db.define(
@@ -21,6 +23,12 @@ const Employee = db.define(
     timestamps: false,
   }
 );
+
+Employee.beforeCreate(async (employee, options) => {
+  const salt = await bcrypt.genSalt(10);
+  const hashedPassword = await bcrypt.hash(employee.password, salt);
+  employee.password = hashedPassword;
+});
 
 sequelizePaginate.paginate(Employee);
 
