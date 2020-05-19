@@ -1,6 +1,7 @@
 /* eslint-disable no-param-reassign */
 const sequelizePaginate = require('sequelize-paginate');
 const Sequelize = require('sequelize');
+const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
 const db = require('../libs/postgres');
 
@@ -29,6 +30,42 @@ Admin.beforeCreate(async (admin, options) => {
   const hashedPassword = await bcrypt.hash(admin.password, salt);
   admin.password = hashedPassword;
 });
+
+Admin.prototype.matchPassword = async function (enteredPassword) {
+  try {
+    return await bcrypt.compare(enteredPassword, this.password);
+  } catch (error) {
+    return console.log(error);
+  }
+};
+
+Admin.prototype.getAccessToken = function () {
+  return jwt.sign(
+    {
+      id: this.id,
+      username: this.username,
+      email: this.email,
+    },
+    process.env.JWT_ACCESS_SECRET,
+    {
+      expiresIn: process.env.JWT_ACCESS_EXPIRE,
+    }
+  );
+};
+
+Admin.prototype.getRefreshToken = function () {
+  return jwt.sign(
+    {
+      id: this.id,
+      username: this.username,
+      email: this.email,
+    },
+    process.env.JWT_REFRESH_SECRET,
+    {
+      expiresIn: process.env.JWT_REFRESH_EXPIRE,
+    }
+  );
+};
 
 sequelizePaginate.paginate(Admin);
 

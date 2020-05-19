@@ -3,6 +3,18 @@ const Employee = require('../models/employee.model');
 const Admin = require('../models/admin.model');
 const Customer = require('../models/customer.model');
 
+const sendTokenResponse = async (user, res) => {
+  // Create token
+  const accessToken = await user.getAccessToken();
+  const refreshToken = await user.getRefreshToken();
+  res.status(200).json({
+    success: true,
+    user,
+    accessToken,
+    refreshToken,
+  });
+};
+
 const registerEmployee = async (req, res, next) => {
   try {
     const { username, email, password } = req.body;
@@ -75,8 +87,52 @@ const registerCustomer = async (req, res, next) => {
   }
 };
 
+const loginEmployee = async (req, res, next) => {
+  try {
+    const { email, password } = req.body;
+    // Check for user
+    const employee = await Employee.findOne({
+      where: { email: email },
+    });
+    if (!employee) {
+      throw new BadRequestError('Account is not exists');
+    }
+    // Check if password matches
+    const isMatch = await employee.matchPassword(password);
+    if (!isMatch) {
+      throw new BadRequestError('Password not match');
+    }
+    await sendTokenResponse(employee, res);
+  } catch (error) {
+    next(new BadRequestError(error.message));
+  }
+};
+
+const loginAdmin = async (req, res, next) => {
+  try {
+    const { email, password } = req.body;
+    // Check for user
+    const admin = await Admin.findOne({
+      where: { email: email },
+    });
+    if (!admin) {
+      throw new BadRequestError('Account is not exists');
+    }
+    // Check if password matches
+    const isMatch = await admin.matchPassword(password);
+    if (!isMatch) {
+      throw new BadRequestError('Password not match');
+    }
+    await sendTokenResponse(admin, res);
+  } catch (error) {
+    next(new BadRequestError(error.message));
+  }
+};
+
 module.exports = {
   registerEmployee,
   registerAdmin,
   registerCustomer,
+  loginEmployee,
+  loginAdmin,
 };

@@ -5,6 +5,8 @@ const {
   registerEmployee,
   registerAdmin,
   registerCustomer,
+  loginEmployee,
+  loginAdmin,
 } = require('../controllers/auth.controller');
 
 const router = express.Router();
@@ -50,6 +52,32 @@ router.post(
   ],
   validateRequest,
   registerCustomer
+);
+
+router.post(
+  '/employee/login',
+  [
+    body('email').isEmail().withMessage('Email must be valid'),
+    body('password')
+      .trim()
+      .isLength({ min: 4, max: 20 })
+      .withMessage('Password must be between 4 and 20 characters'),
+  ],
+  validateRequest,
+  loginEmployee
+);
+
+router.post(
+  '/admin/login',
+  [
+    body('email').isEmail().withMessage('Email must be valid'),
+    body('password')
+      .trim()
+      .isLength({ min: 4, max: 20 })
+      .withMessage('Password must be between 4 and 20 characters'),
+  ],
+  validateRequest,
+  loginAdmin
 );
 
 module.exports = router;
