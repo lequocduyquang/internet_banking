@@ -1,6 +1,7 @@
 const sequelizePaginate = require('sequelize-paginate');
 const Sequelize = require('sequelize');
 const db = require('../libs/postgres');
+const TransactionLog = require('./transaction_log.model');
 
 const TransactionType = db.define(
   'TransactionType',
@@ -19,5 +20,9 @@ const TransactionType = db.define(
 );
 
 sequelizePaginate.paginate(TransactionType);
+
+TransactionType.associate = () => {
+  TransactionType.hasMany(TransactionLog, { foreignKey: 'transaction_type' });
+};
 
 module.exports = TransactionType;

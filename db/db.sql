@@ -6,8 +6,8 @@ CREATE TABLE "customer" (
   "account_number" VARCHAR(50),
   "phone" VARCHAR(50),
   "address" VARCHAR(50),
-  "created_at" DATE,
-  "updated_at" DATE
+  "created_at" timestamp DEFAULT now(),
+  "updated_at" timestamp DEFAULT now()
 );
 CREATE INDEX ON "customer" ("id");
 
@@ -15,8 +15,8 @@ CREATE INDEX ON "customer" ("id");
 CREATE TABLE "partner" (
   "id" SERIAL,
   "code" VARCHAR(50) PRIMARY KEY,
-  "created_at" DATE,
-  "updated_at" DATE
+  "created_at" timestamp DEFAULT now(),
+  "updated_at" timestamp DEFAULT now()
 );
 CREATE INDEX ON "partner" ("id");
 
@@ -26,8 +26,8 @@ CREATE TABLE "employee" (
   "username" VARCHAR(50),
   "email" VARCHAR(50),
   "password" VARCHAR(50),
-  "created_at" DATE,
-  "updated_at" DATE
+  "created_at" timestamp DEFAULT now(),
+  "updated_at" timestamp DEFAULT now()
 );
 CREATE INDEX ON "employee" ("id");
 
@@ -37,8 +37,8 @@ CREATE TABLE "admin" (
   "username" VARCHAR(50),
   "email" VARCHAR(50),
   "password" VARCHAR(50),
-  "created_at" DATE,
-  "updated_at" DATE
+  "created_at" timestamp DEFAULT now(),
+  "updated_at" timestamp DEFAULT now()
 );
 CREATE INDEX ON "admin" ("id");
 
@@ -53,8 +53,8 @@ CREATE TABLE "transaction_log" (
   "amount" FLOAT,
   "message" VARCHAR(100),
   "parner_code" VARCHAR(100),
-  "created_at" DATE,
-  "updated_at" DATE
+  "created_at" timestamp DEFAULT now(),
+  "updated_at" timestamp DEFAULT now()
 );
 CREATE INDEX ON "transaction_log" ("id");
 

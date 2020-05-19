@@ -1,7 +1,7 @@
 const express = require('express');
 const morgan = require('morgan');
 const dotenv = require('dotenv');
-const { NotFoundError, errorHandler, currentUser } = require('@sgjobfit/common');
+const { NotFoundError, errorHandler } = require('@sgjobfit/common');
 const logger = require('./utils/logger');
 
 dotenv.config();
@@ -13,8 +13,7 @@ require('express-async-errors');
 
 app.use(morgan('dev'));
 
-app.use(currentUser);
-app.use('/api/v1/admin', require('./routes'));
+app.use('/api/v1/auth', require('./routes/auth'));
 
 app.all('*', (req, res, next) => {
   throw new NotFoundError();

@@ -1,6 +1,8 @@
 const sequelizePaginate = require('sequelize-paginate');
 const Sequelize = require('sequelize');
 const db = require('../libs/postgres');
+const Partner = require('./partner.model');
+const TransactionType = require('./transaction_type.model');
 
 const TransactionLog = db.define(
   'TransactionLog',
@@ -27,6 +29,14 @@ const TransactionLog = db.define(
     timestamps: false,
   }
 );
+
+TransactionLog.associate = () => {
+  TransactionLog.belongsTo(Partner, { foreignKey: 'partner_code', target_key: 'code' });
+};
+
+TransactionLog.associate = () => {
+  TransactionLog.belongsTo(TransactionType, { foreignKey: 'transaction_type', target_key: 'id' });
+};
 
 sequelizePaginate.paginate(TransactionLog);
 

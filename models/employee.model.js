@@ -13,12 +13,11 @@ const Employee = db.define(
     username: Sequelize.STRING,
     email: Sequelize.STRING,
     password: Sequelize.STRING,
-    address: Sequelize.STRING,
     updated_at: Sequelize.DATE,
     created_at: Sequelize.DATE,
   },
   {
-    tableName: 'comployee',
+    tableName: 'employee',
     timestamps: false,
   }
 );
