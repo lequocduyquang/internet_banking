@@ -1,28 +1,26 @@
 const sequelizePaginate = require('sequelize-paginate');
-const Sequelize = require('sequelize');
-const db = require('../libs/postgres');
-const TransactionLog = require('./transaction_log.model');
 
-const TransactionType = db.define(
-  'TransactionType',
-  {
-    id: {
-      type: Sequelize.INTEGER,
-      primaryKey: true,
-      autoIncrement: true,
+module.exports = (sequelize, DataTypes) => {
+  const TransactionType = sequelize.define(
+    'TransactionType',
+    {
+      id: {
+        type: DataTypes.INTEGER,
+        primaryKey: true,
+        autoIncrement: true,
+      },
+      type: DataTypes.STRING,
     },
-    type: Sequelize.STRING,
-  },
-  {
-    tableName: 'transaction_type',
-    timestamps: false,
-  }
-);
+    {
+      tableName: 'transaction_type',
+      timestamps: false,
+    }
+  );
 
-sequelizePaginate.paginate(TransactionType);
+  sequelizePaginate.paginate(TransactionType);
 
-TransactionType.associate = () => {
-  TransactionType.hasMany(TransactionLog, { foreignKey: 'transaction_type' });
+  TransactionType.associate = models => {
+    TransactionType.hasMany(models.TransactionLog, { foreignKey: 'transaction_type' });
+  };
+  return TransactionType;
 };
-
-module.exports = TransactionType;

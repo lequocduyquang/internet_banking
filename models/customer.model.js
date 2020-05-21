@@ -1,30 +1,28 @@
 const sequelizePaginate = require('sequelize-paginate');
-const Sequelize = require('sequelize');
-const db = require('../libs/postgres');
 
-const Customer = db.define(
-  'Customer',
-  {
-    id: {
-      type: Sequelize.INTEGER,
-      primaryKey: true,
-      autoIncrement: true,
+module.exports = (sequelize, DataTypes) => {
+  const Customer = sequelize.define(
+    'Customer',
+    {
+      id: {
+        type: DataTypes.INTEGER,
+        primaryKey: true,
+        autoIncrement: true,
+      },
+      username: DataTypes.STRING,
+      email: DataTypes.STRING,
+      password: DataTypes.STRING,
+      account_number: DataTypes.STRING,
+      phone: DataTypes.STRING,
+      address: DataTypes.STRING,
+      updated_at: DataTypes.DATE,
+      created_at: DataTypes.DATE,
     },
-    username: Sequelize.STRING,
-    email: Sequelize.STRING,
-    password: Sequelize.STRING,
-    account_number: Sequelize.STRING,
-    phone: Sequelize.STRING,
-    address: Sequelize.STRING,
-    updated_at: Sequelize.DATE,
-    created_at: Sequelize.DATE,
-  },
-  {
-    tableName: 'customer',
-    timestamps: false,
-  }
-);
-
-sequelizePaginate.paginate(Customer);
-
-module.exports = Customer;
+    {
+      tableName: 'customer',
+      timestamps: false,
+    }
+  );
+  sequelizePaginate.paginate(Customer);
+  return Customer;
+};
