@@ -148,6 +148,60 @@ const loginCustomer = async (req, res, next) => {
   }
 };
 
+const getEmployeeProfile = async (req, res, next) => {
+  try {
+    const foundEmployee = await models.Employee.findOne({
+      where: {
+        email: req.user.email,
+      },
+    });
+    if (!foundEmployee) {
+      throw new BadRequestError('Employee with this email is not exists');
+    }
+    res.status(200).send({
+      profile: foundEmployee,
+    });
+  } catch (error) {
+    next(new BadRequestError(error.message));
+  }
+};
+
+const getAdminProfile = async (req, res, next) => {
+  try {
+    const foundAdmin = await models.Admin.findOne({
+      where: {
+        email: req.user.email,
+      },
+    });
+    if (!foundAdmin) {
+      throw new BadRequestError('Admin with this email is not exists');
+    }
+    res.status(200).send({
+      profile: foundAdmin,
+    });
+  } catch (error) {
+    next(new BadRequestError(error.message));
+  }
+};
+
+const getCustomerProfile = async (req, res, next) => {
+  try {
+    const foundCustomer = await models.Customer.findOne({
+      where: {
+        email: req.user.email,
+      },
+    });
+    if (!foundCustomer) {
+      throw new BadRequestError('Customer with this email is not exists');
+    }
+    res.status(200).send({
+      profile: foundCustomer,
+    });
+  } catch (error) {
+    next(new BadRequestError(error.message));
+  }
+};
+
 module.exports = {
   registerEmployee,
   registerAdmin,
@@ -155,4 +209,7 @@ module.exports = {
   loginEmployee,
   loginAdmin,
   loginCustomer,
+  getEmployeeProfile,
+  getAdminProfile,
+  getCustomerProfile,
 };

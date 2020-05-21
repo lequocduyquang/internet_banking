@@ -8,7 +8,11 @@ const {
   loginEmployee,
   loginAdmin,
   loginCustomer,
+  getEmployeeProfile,
+  getAdminProfile,
+  getCustomerProfile,
 } = require('../controllers/auth.controller');
+const { requireAuth } = require('../middleware/auth');
 
 const router = express.Router();
 
@@ -93,5 +97,9 @@ router.post(
   validateRequest,
   loginCustomer
 );
+
+router.get('/employee/me', requireAuth, getEmployeeProfile);
+router.get('/customer/me', requireAuth, getCustomerProfile);
+router.get('/admin/me', requireAuth, getAdminProfile);
 
 module.exports = router;
