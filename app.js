@@ -1,6 +1,7 @@
 const express = require('express');
 const morgan = require('morgan');
 const dotenv = require('dotenv');
+const rateLimit = require('express-rate-limit');
 const { NotFoundError, errorHandler } = require('@sgjobfit/common');
 const logger = require('./utils/logger');
 
@@ -12,6 +13,12 @@ app.use(express.urlencoded({ extended: false }));
 require('express-async-errors');
 
 app.use(morgan('dev'));
+const limiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 100,
+});
+
+app.use(limiter);
 
 app.use('/api/v1/auth', require('./routes/auth'));
 

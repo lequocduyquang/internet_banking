@@ -127,10 +127,32 @@ const loginAdmin = async (req, res, next) => {
   }
 };
 
+const loginCustomer = async (req, res, next) => {
+  try {
+    const { email, password } = req.body;
+    // Check for user
+    const customer = await models.Customer.findOne({
+      where: { email: email },
+    });
+    if (!customer) {
+      throw new BadRequestError('Account is not exists');
+    }
+    // Check if password matches
+    const isMatch = await customer.matchPassword(password);
+    if (!isMatch) {
+      throw new BadRequestError('Password not match');
+    }
+    await sendTokenResponse(customer, res);
+  } catch (error) {
+    next(new BadRequestError(error.message));
+  }
+};
+
 module.exports = {
   registerEmployee,
   registerAdmin,
   registerCustomer,
   loginEmployee,
   loginAdmin,
+  loginCustomer,
 };
