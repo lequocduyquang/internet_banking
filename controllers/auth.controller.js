@@ -1,7 +1,5 @@
 const { BadRequestError } = require('@sgjobfit/common');
-const Employee = require('../models/employee.model');
-const Admin = require('../models/admin.model');
-const Customer = require('../models/customer.model');
+const models = require('../models');
 
 const sendTokenResponse = async (user, res) => {
   // Create token
@@ -18,14 +16,14 @@ const sendTokenResponse = async (user, res) => {
 const registerEmployee = async (req, res, next) => {
   try {
     const { username, email, password } = req.body;
-    const existedEmployee = await Employee.findOne({
+    const existedEmployee = await models.Employee.findOne({
       where: { email: email },
     });
     if (existedEmployee) {
       throw new BadRequestError('Employee is already exists');
     }
 
-    const employee = await Employee.create({
+    const employee = await models.Employee.create({
       username: username,
       email: email,
       password: password,
@@ -41,14 +39,14 @@ const registerEmployee = async (req, res, next) => {
 const registerAdmin = async (req, res, next) => {
   try {
     const { username, email, password } = req.body;
-    const checkUser = await Admin.findOne({
+    const checkUser = await models.Admin.findOne({
       where: { email: email },
     });
     if (checkUser) {
       throw new BadRequestError('Admin is alreay exists');
     }
 
-    const admin = await Admin.create({
+    const admin = await models.Admin.create({
       username,
       email,
       password,
@@ -65,14 +63,14 @@ const registerAdmin = async (req, res, next) => {
 const registerCustomer = async (req, res, next) => {
   try {
     const { username, email, password, phone } = req.body;
-    const checkUser = await Admin.findOne({
+    const checkUser = await models.Customer.findOne({
       where: { phone: phone },
     });
     if (checkUser) {
       throw new BadRequestError('Customer is alreay exists');
     }
 
-    const customer = await Customer.create({
+    const customer = await models.Customer.create({
       username,
       email,
       password,
@@ -91,7 +89,7 @@ const loginEmployee = async (req, res, next) => {
   try {
     const { email, password } = req.body;
     // Check for user
-    const employee = await Employee.findOne({
+    const employee = await models.Employee.findOne({
       where: { email: email },
     });
     if (!employee) {
@@ -112,7 +110,7 @@ const loginAdmin = async (req, res, next) => {
   try {
     const { email, password } = req.body;
     // Check for user
-    const admin = await Admin.findOne({
+    const admin = await models.Admin.findOne({
       where: { email: email },
     });
     if (!admin) {

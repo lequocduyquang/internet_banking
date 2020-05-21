@@ -1,32 +1,31 @@
 const sequelizePaginate = require('sequelize-paginate');
-const Sequelize = require('sequelize');
-const TransactionLog = require('./transaction_log.model');
-const db = require('../libs/postgres');
 
-const Partner = db.define(
-  'Partner',
-  {
-    id: {
-      type: Sequelize.INTEGER,
-      autoIncrement: true,
+module.exports = (sequelize, DataTypes) => {
+  const Partner = sequelize.define(
+    'Partner',
+    {
+      id: {
+        type: DataTypes.INTEGER,
+        autoIncrement: true,
+      },
+      code: {
+        type: DataTypes.STRING,
+        primaryKey: true,
+      },
+      updated_at: DataTypes.DATE,
+      created_at: DataTypes.DATE,
     },
-    code: {
-      type: Sequelize.STRING,
-      primaryKey: true,
-    },
-    updated_at: Sequelize.DATE,
-    created_at: Sequelize.DATE,
-  },
-  {
-    tableName: 'partner',
-    timestamps: false,
-  }
-);
+    {
+      tableName: 'partner',
+      timestamps: false,
+    }
+  );
 
-sequelizePaginate.paginate(Partner);
+  sequelizePaginate.paginate(Partner);
 
-Partner.associate = () => {
-  Partner.hasMany(TransactionLog, { foreignKey: 'partner_code' });
+  Partner.associate = models => {
+    Partner.hasMany(models.TransactionLog, { foreignKey: 'partner_code' });
+  };
+
+  return Partner;
 };
-
-module.exports = Partner;
