@@ -5,25 +5,34 @@ const generateNewPrivateKey = async () => {
   const {
     keys: [privateKey],
   } = await openpgp.key.readArmored(pgp.PRIVATE_KEY);
+  await privateKey.decrypt('abc12345');
   return privateKey;
 };
 
-generateNewPrivateKey().then(res => {
-  console.log(res);
-});
+const encrypt = async message => {
+  const newPrivateKey = await generateNewPrivateKey();
+  const { data: encrypted } = await openpgp.encrypt({
+    message: openpgp.message.fromText(message),
+    publicKeys: (await openpgp.key.readArmored(pgp.PUBLIC_KEY)).keys,
+    privateKeys: [newPrivateKey],
+  });
+  return {
+    newPrivateKey,
+    encrypted,
+  };
+};
 
-// const encrypt = async message => {
-//   const encryptMess = await openpgp.encrypt({
-//     message: openpgp.message.fromText(JSON.stringify({ msg: 'Hello world' })), // input as Message object
-//     publicKeys: (await openpgp.key.readArmored(publicKeyArmored)).keys, // for encryption
-//     privateKeys: [privateKey], // for signing (optional)
-//   });
-// };
-
-const decrypt = message => {
-  return message;
+const decrypt = async ({ newPrivateKey, encrypted }) => {
+  const { data: decrypted } = await openpgp.decrypt({
+    message: await openpgp.message.readArmored(encrypted),
+    publicKeys: (await openpgp.key.readArmored(pgp.PUBLIC_KEY)).keys,
+    privateKeys: [newPrivateKey],
+  });
+  return decrypted;
 };
 
 module.exports = {
+  generateNewPrivateKey,
+  encrypt,
   decrypt,
 };
