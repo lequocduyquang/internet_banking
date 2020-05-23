@@ -21,6 +21,7 @@ const limiter = rateLimit({
 app.use(limiter);
 
 app.use('/api/v1/auth', require('./routes/auth'));
+app.use('/api/v1/partner', require('./routes/partner'));
 
 app.all('*', (req, res, next) => {
   throw new NotFoundError();

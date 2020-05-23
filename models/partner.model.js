@@ -8,10 +8,19 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.INTEGER,
         autoIncrement: true,
       },
+      name: {
+        type: DataTypes.STRING,
+        allowNull: false,
+      },
+      password: {
+        type: DataTypes.STRING,
+        allowNull: false,
+      },
       code: {
         type: DataTypes.STRING,
         primaryKey: true,
       },
+
       updated_at: DataTypes.DATE,
       created_at: DataTypes.DATE,
     },
