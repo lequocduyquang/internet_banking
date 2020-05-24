@@ -1,12 +1,14 @@
 const { BadRequestError } = require('@sgjobfit/common');
 const logger = require('../utils/logger');
 const models = require('../models/customer.model');
+const { transaction } = require('../config/config');
 
 const { Customer, TransactionLog } = models;
 const { decrypt } = require('../utils/pgp');
 
 const handleTransaction = async transactionData => {
   try {
+    // console.log('transactionData: ', transactionData);
     if (!transactionData) {
       throw new BadRequestError('Transaction data is required');
     }
@@ -16,25 +18,28 @@ const handleTransaction = async transactionData => {
       amount,
       message,
       transaction_type: transactionType,
+      transaction_method: transactionMethod, // 1: tru phi nguoi gui, 2: tru phi nguoi nhan
       partner_code: partnerCode,
     } = transactionData;
     const transactionLog = await TransactionLog.create({
       transaction_type: transactionType,
-      transaction_method: 2,
+      transaction_method: transactionMethod,
       is_actived: true,
       is_notified: false,
       sender_account_number: senderAccountNumber,
       receiver_account_number: receiverAccountNumber,
       amount,
       message,
-      partner_code: partnerCode,
+      partner_code: partnerCode || null,
     });
+    console.log('transactionLog: ', transactionLog);
     const receiver = await Customer.findOne({
       where: {
         account_number: receiverAccountNumber,
       },
     });
-    await receiver.updateBalance(amount);
+    if (transactionMethod === 1) await receiver.updateBalance(amount, 0);
+    else await receiver.updateBalance(amount, transaction.fee);
     await receiver.save();
     return {
       receiver,

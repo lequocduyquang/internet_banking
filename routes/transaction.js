@@ -10,18 +10,17 @@ const {
 } = require('../controllers/transaction.controller');
 
 router.post(
-  '/transaction',
+  '/partner',
   [body('message').isString(), body('privateKey').isString()],
   validateRequest,
   transactionPartner
 );
 router.post(
-  '/internal/transaction',
+  '/internal',
   [
     body('sender_account_number').isString(),
     body('receiver_account_number').isString(),
-    body('transaction_type').isInt(),
-    body('partner_code').isString(),
+    body('transaction_type').isString(),
   ],
   validateRequest,
   transactionInternal

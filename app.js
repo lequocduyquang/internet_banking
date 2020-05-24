@@ -22,6 +22,7 @@ app.use(limiter);
 
 app.use('/api/v1/auth', require('./routes/auth'));
 app.use('/api/v1/partner', require('./routes/partner'));
+app.use('/api/v1/transaction', require('./routes/transaction'));
 
 app.all('*', (req, res, next) => {
   throw new NotFoundError();

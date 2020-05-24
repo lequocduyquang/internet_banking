@@ -113,4 +113,7 @@ ow==
 -----END PGP PUBLIC KEY BLOCK-----
 `,
   },
+  transaction: {
+    fee: 1000,
+  },
 };

@@ -9,8 +9,8 @@ module.exports = (sequelize, DataTypes) => {
         primaryKey: true,
         autoIncrement: true,
       },
-      transaction_type: DataTypes.INTEGER,
-      transaction_method: DataTypes.INTEGER, // 1: internal, 2: partner
+      transaction_type: DataTypes.STRING, // "INTERNAL" || "PARTNER"
+      transaction_method: DataTypes.INTEGER, // 1: tru phi nguoi gui, 2: tru phi nguoi nhan
       is_actived: DataTypes.BOOLEAN,
       is_notified: DataTypes.BOOLEAN,
       sender_account_number: DataTypes.STRING,

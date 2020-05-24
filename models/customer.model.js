@@ -1,4 +1,5 @@
 const sequelizePaginate = require('sequelize-paginate');
+const { transaction } = require('../config/config');
 
 module.exports = (sequelize, DataTypes) => {
   const Customer = sequelize.define(
@@ -28,7 +29,7 @@ module.exports = (sequelize, DataTypes) => {
   Customer.prototype.updateBalance = function (amount) {
     const customer = this;
     return new Promise(resolve => {
-      customer.account_balance += amount;
+      customer.account_balance += amount - transaction.fee;
       resolve(customer);
     });
   };
