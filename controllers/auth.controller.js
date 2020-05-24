@@ -1,4 +1,5 @@
 const { BadRequestError } = require('@sgjobfit/common');
+const { Random } = require('random-js');
 const models = require('../models');
 
 const sendTokenResponse = async (user, res) => {
@@ -75,6 +76,8 @@ const registerCustomer = async (req, res, next) => {
       email,
       password,
       phone,
+      account_number: new Random().integer(1000000000, 9999999999),
+      account_balance: 0,
     });
 
     res.status(201).send({
