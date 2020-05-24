@@ -10,7 +10,7 @@ module.exports = (sequelize, DataTypes) => {
         autoIncrement: true,
       },
       transaction_type: DataTypes.INTEGER,
-      transaction_method: DataTypes.INTEGER,
+      transaction_method: DataTypes.INTEGER, // 1: internal, 2: partner
       is_actived: DataTypes.BOOLEAN,
       is_notified: DataTypes.BOOLEAN,
       sender_account_number: DataTypes.STRING,
