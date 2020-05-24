@@ -26,10 +26,10 @@ module.exports = (sequelize, DataTypes) => {
     }
   );
 
-  Customer.prototype.updateBalance = function (amount) {
+  Customer.prototype.updateBalance = function (amount, fee) {
     const customer = this;
     return new Promise(resolve => {
-      customer.account_balance += amount - transaction.fee;
+      customer.account_balance += amount - fee;
       resolve(customer);
     });
   };

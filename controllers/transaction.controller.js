@@ -32,14 +32,36 @@ const handleTransaction = async transactionData => {
       message,
       partner_code: partnerCode || null,
     });
-    console.log('transactionLog: ', transactionLog);
+
+    const sender = await Customer.findOne({
+      where: {
+        account_number: senderAccountNumber,
+      },
+    });
+
     const receiver = await Customer.findOne({
       where: {
         account_number: receiverAccountNumber,
       },
     });
-    if (transactionMethod === 1) await receiver.updateBalance(amount, 0);
-    else await receiver.updateBalance(amount, transaction.fee);
+    if (transactionType === 1) {
+      if (transactionMethod === 1) {
+        await receiver.updateBalance(amount, 0);
+        await sender.updateBalance(-amount, transaction.fee);
+      } else {
+        await receiver.updateBalance(amount, transaction.fee);
+        await sender.updateBalance(-amount, 0);
+      }
+    }
+    if (transactionType === 2) {
+      if (transactionMethod === 1) {
+        await receiver.updateBalance(amount, 0);
+      } else {
+        await receiver.updateBalance(amount, transaction.fee);
+      }
+    }
+
+    await sender.save();
     await receiver.save();
     return {
       receiver,
