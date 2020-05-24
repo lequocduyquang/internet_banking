@@ -1,6 +1,7 @@
+/* eslint-disable consistent-return */
 const { BadRequestError } = require('@sgjobfit/common');
 const logger = require('../utils/logger');
-const models = require('../models/customer.model');
+const models = require('../models');
 const { transaction } = require('../config/config');
 
 const { Customer, TransactionLog } = models;
@@ -8,7 +9,6 @@ const { decrypt } = require('../utils/pgp');
 
 const handleTransaction = async transactionData => {
   try {
-    // console.log('transactionData: ', transactionData);
     if (!transactionData) {
       throw new BadRequestError('Transaction data is required');
     }

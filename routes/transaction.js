@@ -20,7 +20,7 @@ router.post(
   [
     body('sender_account_number').isString(),
     body('receiver_account_number').isString(),
-    body('transaction_type').isString(),
+    body('transaction_type').isInt(),
   ],
   validateRequest,
   transactionInternal

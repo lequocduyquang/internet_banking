@@ -33,7 +33,7 @@ module.exports = (sequelize, DataTypes) => {
   sequelizePaginate.paginate(Partner);
 
   Partner.associate = models => {
-    Partner.hasMany(models.TransactionLog, { foreignKey: 'partner_code' });
+    Partner.hasMany(models.TransactionLog, { foreignKey: 'partner_code', allowNull: true });
   };
 
   return Partner;
