@@ -31,12 +31,6 @@ const decrypt = async ({ newPrivateKey, encrypted }) => {
   return decrypted;
 };
 
-// encrypt({ msg: 'hello' }).then(async res => {
-//   const { newPrivateKey, encrypted } = res;
-//   const a = await decrypt({ newPrivateKey, encrypted });
-//   console.log('Ket thuc: ', a);
-// });
-
 module.exports = {
   encrypt,
   decrypt,

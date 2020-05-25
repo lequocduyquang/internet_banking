@@ -3,7 +3,6 @@
 const jwt = require('jsonwebtoken');
 const { BadRequestError } = require('@sgjobfit/common');
 const models = require('../models');
-const { pgp } = require('../config/config');
 
 const requireAuth = async (req, res, next) => {
   let token;
@@ -53,7 +52,37 @@ const verifyPartner = async (req, res, next) => {
   }
 };
 
+const verifyEmployee = async (req, res, next) => {
+  let token;
+
+  if (req.headers.authorization && req.headers.authorization.startsWith('Bearer')) {
+    token = req.headers.authorization.split(' ')[1];
+  }
+
+  if (!token) {
+    return next(new BadRequestError('Not authorized'));
+  }
+
+  try {
+    // Verify token
+    const payload = jwt.verify(token, process.env.JWT_ACCESS_SECRET);
+    const foundEmployee = await models.Employee.findOne({
+      where: {
+        id: payload.id,
+      },
+    });
+    if (!foundEmployee) {
+      throw new BadRequestError('Employee not found');
+    }
+    req.user = payload;
+    next();
+  } catch (err) {
+    return next(new BadRequestError(err.message));
+  }
+};
+
 module.exports = {
   requireAuth,
   verifyPartner,
+  verifyEmployee,
 };
