@@ -60,18 +60,40 @@ const chargeCustomer = async (req, res, next) => {
 
 const getTransactionLog = async (req, res, next) => {
   try {
-    const accountNumber = req.params.account_number;
+    const { account_number: accountNumber } = req.params;
+    let condition = {};
     if (!accountNumber) {
       throw new BadRequestError('Customer is not exists');
     }
-    const history = await models.TransactionLog.find({
-      where: {
+    if (req.query.isReceive) {
+      condition = { ...condition, receiver_account_number: accountNumber };
+    }
+    if (req.query.isSender) {
+      condition = { ...condition, sender_account_number: accountNumber };
+    }
+    if (req.query.isBeRemind) {
+      condition = { ...condition, transaction_type: 3, sender_account_number: accountNumber };
+    }
+    if (req.query.isRemind) {
+      if (req.query.isBeRemind) {
+        condition = { ...condition, transaction_type: 3, receiver_account_number: accountNumber };
+      }
+    }
+    if (req.query.all) {
+      condition = {
+        ...condition,
         [Op.or]: {
           sender_account_number: accountNumber,
           receiver_account_number: accountNumber,
         },
-      },
+      };
+    }
+    const history = await models.TransactionLog.findAll({
+      where: condition,
+      order: [['updated_at', 'DESC']],
     });
+
+    console.log(history);
     res.status(200).send({
       message: 'Success',
       data: history,
