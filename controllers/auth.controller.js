@@ -80,6 +80,7 @@ const registerCustomer = async (req, res, next) => {
       fullname,
       account_number: new Random().integer(1000000000, 9999999999),
       account_balance: 0,
+      list_contact: [],
     });
 
     res.status(201).send({

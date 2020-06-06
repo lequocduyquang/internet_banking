@@ -20,7 +20,7 @@ module.exports = (sequelize, DataTypes) => {
       account_balance: DataTypes.FLOAT,
       phone: DataTypes.STRING,
       address: DataTypes.STRING,
-      // list_contact: DataTypes.ARRAY(DataTypes.JSON), // JSON = { STK: string, name_remind: string }
+      list_contact: DataTypes.ARRAY(DataTypes.JSON), // JSON = { STK: string, name_remind: string }
       updated_at: DataTypes.DATE,
       created_at: DataTypes.DATE,
     },
