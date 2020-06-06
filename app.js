@@ -4,6 +4,7 @@ const dotenv = require('dotenv');
 const rateLimit = require('express-rate-limit');
 const { NotFoundError, errorHandler } = require('@sgjobfit/common');
 const logger = require('./utils/logger');
+require('express-async-errors');
 
 dotenv.config();
 
@@ -24,6 +25,11 @@ app.use('/api/v1/auth', require('./routes/auth'));
 app.use('/api/v1/partner', require('./routes/partner'));
 app.use('/api/v1/transaction', require('./routes/transaction'));
 app.use('/api/v1/employee', require('./routes/employee'));
+app.use('/api/v1/customer', require('./routes/customer'));
+
+app.get('/abc', (req, res) => {
+  res.send('Hello');
+});
 
 app.all('*', (req, res, next) => {
   throw new NotFoundError();

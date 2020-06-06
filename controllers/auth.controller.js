@@ -64,14 +64,12 @@ const registerAdmin = async (req, res, next) => {
 const registerCustomer = async (req, res, next) => {
   try {
     const { username, email, password, phone, fullname } = req.body;
-    console.log({ username, email, password, phone, fullname });
     const checkUser = await models.Customer.findOne({
       where: { phone: phone },
     });
     if (checkUser) {
       throw new BadRequestError('Customer is alreay exists');
     }
-
     const customer = await models.Customer.create({
       username,
       email,
@@ -82,7 +80,6 @@ const registerCustomer = async (req, res, next) => {
       account_balance: 0,
       list_contact: [],
     });
-
     res.status(201).send({
       customer_created: customer,
     });
