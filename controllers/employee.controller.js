@@ -35,6 +35,12 @@ const chargeCustomer = async (req, res, next) => {
       throw new BadRequestError('Customer is not exists');
     }
 
+    /**
+     * Thiếu ghi vào bảng Transaction Log
+     *
+     *
+     *
+     */
     const customter = await models.Customter.update(
       { account_balance: +amount },
       {

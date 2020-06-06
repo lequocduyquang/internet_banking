@@ -1,5 +1,4 @@
 const sequelizePaginate = require('sequelize-paginate');
-const { transaction } = require('../config/config');
 
 module.exports = (sequelize, DataTypes) => {
   const Customer = sequelize.define(
@@ -17,6 +16,7 @@ module.exports = (sequelize, DataTypes) => {
       account_balance: DataTypes.FLOAT,
       phone: DataTypes.STRING,
       address: DataTypes.STRING,
+      list_contact: DataTypes.ARRAY(DataTypes.JSON), // JSON = { STK: string, name_remind: string }
       updated_at: DataTypes.DATE,
       created_at: DataTypes.DATE,
     },
@@ -32,6 +32,11 @@ module.exports = (sequelize, DataTypes) => {
       customer.account_balance += amount - fee;
       resolve(customer);
     });
+  };
+
+  Customer.associate = models => {
+    Customer.hasMany(models.Debits, { foreignKey: 'creator_customer_id' });
+    Customer.hasMany(models.Debits, { foreignKey: 'reminder_id' });
   };
 
   sequelizePaginate.paginate(Customer);
