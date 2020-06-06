@@ -48,6 +48,7 @@ router.post(
   '/customer/register',
   [
     body('username').isString(),
+    body('fullname').isString(),
     body('email').isEmail().withMessage('Email must be valid'),
     body('phone').isLength({ max: 15 }),
     body('password')

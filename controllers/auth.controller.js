@@ -63,7 +63,8 @@ const registerAdmin = async (req, res, next) => {
 
 const registerCustomer = async (req, res, next) => {
   try {
-    const { username, email, password, phone } = req.body;
+    const { username, email, password, phone, fullname } = req.body;
+    console.log({ username, email, password, phone, fullname });
     const checkUser = await models.Customer.findOne({
       where: { phone: phone },
     });
@@ -76,6 +77,7 @@ const registerCustomer = async (req, res, next) => {
       email,
       password,
       phone,
+      fullname,
       account_number: new Random().integer(1000000000, 9999999999),
       account_balance: 0,
     });

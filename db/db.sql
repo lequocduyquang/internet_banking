@@ -66,3 +66,7 @@ CREATE TABLE "transaction_type" (
 ALTER TABLE "transaction_log" ADD FOREIGN KEY ("transaction_type") REFERENCES "transaction_type" ("id");
 
 ALTER TABLE "transaction_log" ADD FOREIGN KEY ("parner_code") REFERENCES "partner" ("code");
+
+alter table customer add column account_balance float;
+
+alter table customer add column fullname text;
