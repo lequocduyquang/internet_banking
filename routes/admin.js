@@ -6,6 +6,7 @@ const {
   getEmployee,
   createEmployee,
   deleteEmployee,
+  getAllTransaction,
 } = require('../controllers/admin.controller');
 
 const router = express.Router();
@@ -14,6 +15,7 @@ const { requireAuth, authorize } = require('../middleware/auth');
 router.use(requireAuth);
 router.use(authorize);
 
+/** EMPLOYEE */
 router.get('/employees', getAllEmployee);
 router.get('/employees/:id', getEmployee);
 router.post(
@@ -30,5 +32,8 @@ router.post(
   createEmployee
 );
 router.delete('/employees/:id', deleteEmployee);
+
+/** TRANSACTION  */
+router.get('/transactions', getAllTransaction);
 
 module.exports = router;

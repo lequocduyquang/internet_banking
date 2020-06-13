@@ -1,5 +1,6 @@
 const createErrors = require('http-errors');
-
+const _ = require('lodash');
+const { Op } = require('sequelize');
 const adminService = require('../services/admin.service');
 const { buildPaginationOpts, decoratePaginatedResult } = require('../utils/paginate');
 
@@ -66,9 +67,44 @@ const deleteEmployee = async (req, res, next) => {
   }
 };
 
+const getAllTransaction = async (req, res, next) => {
+  try {
+    const { begin, end, partner } = req.query;
+    const sort = {
+      sortBy: req.query.sortBy || 'created_at',
+      orderBy: req.query.orderBy || 'DESC',
+    };
+    const query = _.omitBy(
+      {
+        created_at: _.get(
+          _.omitBy(
+            {
+              [Op.gte]: begin || null,
+              [Op.lte]: end || null,
+            },
+            _.isNil
+          ),
+          ''
+        ),
+        partner_code: partner || null,
+      },
+      _.isNil
+    );
+    const paginationOpts = buildPaginationOpts(req);
+    const result = await adminService.getAllTransaction(query, sort, paginationOpts);
+    if (result.error) {
+      return next(createErrors(400, result.error.message));
+    }
+    return res.status(200).send(decoratePaginatedResult(result.transactions, paginationOpts));
+  } catch (error) {
+    return next(createErrors(400, error.message));
+  }
+};
+
 module.exports = {
   getAllEmployee,
   getEmployee,
   createEmployee,
   deleteEmployee,
+  getAllTransaction,
 };

@@ -12,6 +12,7 @@ exports.ErrorCode = {
   COMPANIES_NOT_FOUND: 'List companies not found',
   EMPLOYEES_NOT_FOUND: 'List employees not found',
   PROMOTIONS_NOT_FOUND: 'List promotions not found',
+  TRANSACTIONS_NOT_FOUND: 'List transactions not found',
   EMPLOYEE_INFO_NOT_FOUND: 'Employee info not found',
   PARTNER_INFO_NOT_FOUND: 'Partner info not found',
   NOT_AUTHORIZED: 'Not authorized',

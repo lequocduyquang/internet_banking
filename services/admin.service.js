@@ -1,9 +1,10 @@
 const _ = require('lodash');
+
 const { ErrorCode } = require('../constants/ErrorCode');
 const logger = require('../utils/logger');
 const models = require('../models');
 
-const { Employee } = models;
+const { Employee, TransactionLog } = models;
 
 const getAllEmployee = async (paginationOpts = {}) => {
   try {
@@ -99,9 +100,32 @@ const deleteEmployee = async id => {
   }
 };
 
+const getAllTransaction = async (query, sort, paginationOpts = {}) => {
+  try {
+    const transactions = await TransactionLog.paginate({
+      where: query,
+      order: [[`${sort.sortBy}`, `${sort.orderBy}`]],
+      ...paginationOpts,
+    });
+    if (_.isNil(transactions)) {
+      return {
+        error: new Error(ErrorCode.TRANSACTIONS_NOT_FOUND),
+      };
+    }
+    return {
+      transactions,
+    };
+  } catch (error) {
+    return {
+      error: new Error(ErrorCode.SOMETHING_WENT_WRONG),
+    };
+  }
+};
+
 module.exports = {
   getAllEmployee,
   getEmployee,
   createEmployee,
   deleteEmployee,
+  getAllTransaction,
 };
