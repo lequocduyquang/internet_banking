@@ -9,6 +9,9 @@ const { Employee, TransactionLog } = models;
 const getAllEmployee = async (paginationOpts = {}) => {
   try {
     const employees = await Employee.paginate({
+      where: {
+        status: 1,
+      },
       attributes: { exclude: ['password'] },
       ...paginationOpts,
     });
@@ -32,6 +35,7 @@ const getEmployee = async (id, paginationOpts = {}) => {
     const employee = await Employee.paginate({
       where: {
         id: id,
+        status: 1,
       },
       attributes: { exclude: ['password'] },
       ...paginationOpts,

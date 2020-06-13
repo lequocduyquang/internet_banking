@@ -1,60 +1,47 @@
 const { BadRequestError } = require('@sgjobfit/common');
 const { Op } = require('sequelize');
+const createErrors = require('http-errors');
 const models = require('../models');
+
+const employeeService = require('../services/employee.service');
 
 const createCustomer = async (req, res, next) => {
   try {
-    const { username, email, password } = req.body;
-    const existedCustomer = await models.Customter.findOne({
-      where: { email: email },
+    const { username, email, password, fullname, phone, address } = req.body;
+    const result = await employeeService.createCustomer({
+      username,
+      email,
+      password,
+      fullname,
+      phone,
+      address,
     });
-    if (existedCustomer) {
-      throw new BadRequestError('Customer is not exists');
+    if (result.error) {
+      return next(createErrors(400, result.error.message));
     }
-
-    const customter = await models.Customter.create({
-      username: username,
-      email: email,
-      password: password,
-    });
-    res.status(201).send({
-      customer_created: customter,
+    return res.status(200).json({
+      success: true,
+      customer: result.data,
     });
   } catch (error) {
-    next(new BadRequestError(error.message));
+    return next(createErrors(400, error.message));
   }
 };
 
-const chargeCustomer = async (req, res, next) => {
+const payInCustomer = async (req, res, next) => {
   try {
     const { account_number: accountNumber, amount } = req.body;
-    const existedCustomer = await models.Customter.findOne({
-      where: { account_number: accountNumber },
-    });
-    if (existedCustomer) {
-      throw new BadRequestError('Customer is not exists');
+    const result = await employeeService.payInCustomer({ accountNumber, amount });
+    if (result.error) {
+      return next(createErrors(400, result.error.message));
     }
-
-    /**
-     * Thiếu ghi vào bảng Transaction Log
-     *
-     *
-     *
-     */
-    const customter = await models.Customter.update(
-      { account_balance: +amount },
-      {
-        where: {
-          account_number: accountNumber,
-        },
-      }
-    );
-    res.status(200).send({
-      message: 'Success',
-      data: customter,
+    return res.status(200).json({
+      success: true,
+      customer: result.data.customer,
+      transaction_log: result.data.transaction_log,
     });
   } catch (error) {
-    next(new BadRequestError(error.message));
+    return next(createErrors(400, error.message));
   }
 };
 
@@ -105,6 +92,6 @@ const getTransactionLog = async (req, res, next) => {
 
 module.exports = {
   createCustomer,
-  chargeCustomer,
+  payInCustomer,
   getTransactionLog,
 };
