@@ -2,7 +2,7 @@ const express = require('express');
 const morgan = require('morgan');
 const dotenv = require('dotenv');
 const rateLimit = require('express-rate-limit');
-const { NotFoundError, errorHandler } = require('@sgjobfit/common');
+const { ErrorCode } = require('./constants/ErrorCode');
 const logger = require('./utils/logger');
 require('express-async-errors');
 
@@ -21,6 +21,10 @@ const limiter = rateLimit({
 
 app.use(limiter);
 
+app.get('/health', (req, res) => {
+  res.send('Welcome to Internet Banking');
+});
+
 app.use('/api/v1/auth', require('./routes/auth'));
 app.use('/api/v1/partner', require('./routes/partner'));
 app.use('/api/v1/transaction', require('./routes/transaction'));
@@ -28,14 +32,17 @@ app.use('/api/v1/employee', require('./routes/employee'));
 app.use('/api/v1/customer', require('./routes/customer'));
 app.use('/api/v1/admin', require('./routes/admin'));
 
-app.get('/abc', (req, res) => {
-  res.send('Hello');
+app.use(function (err, req, res, next) {
+  const statusCode = err.status || 500;
+  if (statusCode === 500) {
+    res.status(statusCode).send({
+      errors: [{ message: ErrorCode.INTERNAL_SERVER_ERROR }],
+    });
+  }
+  res.status(statusCode).send({
+    errors: [{ message: `${err.message}` }],
+  });
 });
-
-app.all('*', (req, res, next) => {
-  throw new NotFoundError();
-});
-app.use(errorHandler);
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => logger.info(`Server started on port ${PORT}`));

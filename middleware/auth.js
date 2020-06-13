@@ -1,34 +1,41 @@
 /* eslint-disable consistent-return */
 /* eslint-disable prefer-destructuring */
 const jwt = require('jsonwebtoken');
-const { BadRequestError } = require('@sgjobfit/common');
+const createErrors = require('http-errors');
+const { ErrorCode } = require('../constants/ErrorCode');
 const models = require('../models');
 
 const requireAuth = async (req, res, next) => {
   let token;
-
   if (req.headers.authorization && req.headers.authorization.startsWith('Bearer')) {
     token = req.headers.authorization.split(' ')[1];
   }
 
   if (!token) {
-    return next(new BadRequestError('Not authorized'));
+    return next(createErrors(401, ErrorCode.NOT_AUTHORIZED));
   }
 
   try {
     // Verify token
     const payload = jwt.verify(token, process.env.JWT_ACCESS_SECRET);
     req.user = payload;
-    next();
+    return next();
   } catch (err) {
-    return next(new BadRequestError(err.message));
+    return next(createErrors(401, err.message));
   }
+};
+
+const authorize = (req, res, next) => {
+  if (req.user.role !== 1) {
+    throw createErrors(403, ErrorCode.FORBIDDEN);
+  }
+  next();
 };
 
 const verifyPartner = async (req, res, next) => {
   const partnerCode = req.headers.partner;
   if (!partnerCode) {
-    next(new BadRequestError('You are not allowed to access this resource'));
+    return next(createErrors(403, ErrorCode.FORBIDDEN));
   }
   try {
     const verified = jwt.verify(partnerCode, process.env.JWT_PARTNER_SECRET);
@@ -43,12 +50,12 @@ const verifyPartner = async (req, res, next) => {
         },
       });
       if (!foundPartner) {
-        next(new BadRequestError('Partner code not found'));
+        return next(createErrors(401, ErrorCode.PARTNER_INFO_NOT_FOUND));
       }
       next();
     }
   } catch (error) {
-    console.error(error);
+    return next(createErrors(401, error.message));
   }
 };
 
@@ -60,7 +67,7 @@ const verifyEmployee = async (req, res, next) => {
   }
 
   if (!token) {
-    return next(new BadRequestError('Not authorized'));
+    return next(createErrors(401, ErrorCode.NOT_AUTHORIZED));
   }
 
   try {
@@ -72,17 +79,18 @@ const verifyEmployee = async (req, res, next) => {
       },
     });
     if (!foundEmployee) {
-      throw new BadRequestError('Employee not found');
+      return next(createErrors(401, ErrorCode.EMPLOYEE_INFO_NOT_FOUND));
     }
     req.user = payload;
     next();
-  } catch (err) {
-    return next(new BadRequestError(err.message));
+  } catch (error) {
+    return next(createErrors(401, error.message));
   }
 };
 
 module.exports = {
   requireAuth,
+  authorize,
   verifyPartner,
   verifyEmployee,
 };
