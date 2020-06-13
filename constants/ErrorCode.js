@@ -1,6 +1,7 @@
 exports.ErrorCode = {
   ADMIN_EMAIL_IS_EXIST: 'Email admin is alreay exists',
   PARTNER_EMAIL_IS_EXIST: 'Email partner is alreay exists',
+  CUSTOMER_EMAIL_IS_EXIST: 'Email customer is alreay exists',
   EMPLOYEE_EMAIL_IS_EXIST: 'Email employee is alreay exists',
   EMAIL_NOT_REGISTERED: 'Email is not registered',
   PASSWORD_NOT_MATCH: 'Password is not match',
@@ -15,6 +16,8 @@ exports.ErrorCode = {
   TRANSACTIONS_NOT_FOUND: 'List transactions not found',
   EMPLOYEE_INFO_NOT_FOUND: 'Employee info not found',
   PARTNER_INFO_NOT_FOUND: 'Partner info not found',
+  ADMIN_INFO_NOT_FOUND: 'Admin info not found',
+  CUSTOMER_INFO_NOT_FOUND: 'Customer info not found',
   NOT_AUTHORIZED: 'Not authorized',
   FORBIDDEN: 'You are not allowed to access this resource',
   PARAMS_NOT_FOUND: 'Paramas not found',

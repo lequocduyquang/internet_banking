@@ -61,7 +61,7 @@ const createEmployee = async ({ username, email, password }) => {
     if (isExistedUser) {
       logger.info(`POSTGRES: ${ErrorCode.EMPLOYEE_EMAIL_IS_EXIST}`);
       return {
-        error: new Error(ErrorCode.COMPANY_EMAIL_IS_EXIST),
+        error: new Error(ErrorCode.EMPLOYEE_EMAIL_IS_EXIST),
       };
     }
     const employee = await Employee.create({ username, password, email });
