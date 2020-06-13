@@ -1,5 +1,5 @@
 const _ = require('lodash');
-
+const sequelize = require('sequelize');
 const { ErrorCode } = require('../constants/ErrorCode');
 const logger = require('../utils/logger');
 const models = require('../models');
@@ -116,8 +116,13 @@ const getAllTransaction = async (query, sort, paginationOpts = {}) => {
         error: new Error(ErrorCode.TRANSACTIONS_NOT_FOUND),
       };
     }
+    let sumAmount = 0;
+    // eslint-disable-next-line no-return-assign
+    transactions.docs.map(item => (sumAmount += item.amount));
+
     return {
-      transactions,
+      data: transactions,
+      sum: sumAmount,
     };
   } catch (error) {
     return {

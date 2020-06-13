@@ -36,6 +36,6 @@ router.post(
   payInCustomer
 );
 
-router.get('/:account_number', getTransactionLog);
+router.get('/history/:account_number', getTransactionLog);
 
 module.exports = router;

@@ -95,7 +95,10 @@ const getAllTransaction = async (req, res, next) => {
     if (result.error) {
       return next(createErrors(400, result.error.message));
     }
-    return res.status(200).send(decoratePaginatedResult(result.transactions, paginationOpts));
+    return res.status(200).send({
+      ...decoratePaginatedResult(result.data, paginationOpts),
+      sum_amount: result.sum,
+    });
   } catch (error) {
     return next(createErrors(400, error.message));
   }
