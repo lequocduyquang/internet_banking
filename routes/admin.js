@@ -11,8 +11,8 @@ const {
 const router = express.Router();
 const { requireAuth, authorize } = require('../middleware/auth');
 
-// router.use(requireAuth);
-// router.use(authorize);
+router.use(requireAuth);
+router.use(authorize);
 
 router.get('/employees', getAllEmployee);
 router.get('/employees/:id', getEmployee);

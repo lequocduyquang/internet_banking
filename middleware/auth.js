@@ -25,9 +25,14 @@ const requireAuth = async (req, res, next) => {
   }
 };
 
-const authorize = (req, res, next) => {
-  console.log('User: ', req.user);
-  if (req.user.role !== 1) {
+const authorize = async (req, res, next) => {
+  const email = req.user.email;
+  const admin = await models.Admin.findOne({
+    where: {
+      email: email,
+    },
+  });
+  if (!admin) {
     throw createErrors(403, ErrorCode.FORBIDDEN);
   }
   next();
