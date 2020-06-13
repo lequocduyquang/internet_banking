@@ -19,7 +19,7 @@ const router = express.Router();
 router.post(
   '/employee/register/',
   [
-    body('username').isString(),
+    body('username').isString().withMessage('Username must be valid'),
     body('email').isEmail().withMessage('Email must be valid'),
     body('password')
       .trim()
@@ -33,7 +33,7 @@ router.post(
 router.post(
   '/admin/register',
   [
-    body('username').isString(),
+    body('username').isString().withMessage('Username must be valid'),
     body('email').isEmail().withMessage('Email must be valid'),
     body('password')
       .trim()
@@ -47,8 +47,8 @@ router.post(
 router.post(
   '/customer/register',
   [
-    body('username').isString(),
-    body('fullname').isString(),
+    body('username').isString().withMessage('Username must be valid'),
+    body('fullname').isString().withMessage('Fullname must be valid'),
     body('email').isEmail().withMessage('Email must be valid'),
     body('phone').isLength({ max: 15 }),
     body('password')
