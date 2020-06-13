@@ -11,7 +11,6 @@ dotenv.config();
 const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
-require('express-async-errors');
 
 app.use(morgan('dev'));
 const limiter = rateLimit({

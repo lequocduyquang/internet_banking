@@ -26,6 +26,7 @@ const requireAuth = async (req, res, next) => {
 };
 
 const authorize = (req, res, next) => {
+  console.log('User: ', req.user);
   if (req.user.role !== 1) {
     throw createErrors(403, ErrorCode.FORBIDDEN);
   }
