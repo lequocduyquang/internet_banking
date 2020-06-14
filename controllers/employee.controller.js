@@ -1,7 +1,6 @@
 const { BadRequestError } = require('@sgjobfit/common');
 const { Op } = require('sequelize');
 const createErrors = require('http-errors');
-const models = require('../models');
 
 const employeeService = require('../services/employee.service');
 
@@ -75,18 +74,16 @@ const getTransactionLog = async (req, res, next) => {
         },
       };
     }
-    const history = await models.TransactionLog.findAll({
-      where: condition,
-      order: [['updated_at', 'DESC']],
-    });
-
-    console.log(history);
-    res.status(200).send({
-      message: 'Success',
-      data: history,
+    const result = await employeeService.getTransactionLogHistory(condition);
+    if (result.error) {
+      return next(createErrors(400, result.error.message));
+    }
+    return res.status(200).json({
+      success: true,
+      history: result.data,
     });
   } catch (error) {
-    next(new BadRequestError(error.message));
+    return next(createErrors(400, error.message));
   }
 };
 

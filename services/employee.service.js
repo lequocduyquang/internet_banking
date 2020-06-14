@@ -73,7 +73,24 @@ const payInCustomer = async ({ accountNumber, amount }) => {
   }
 };
 
+const getTransactionLogHistory = async condition => {
+  try {
+    const history = await TransactionLog.findAll({
+      where: condition,
+      order: [['updated_at', 'DESC']],
+    });
+    return {
+      data: history,
+    };
+  } catch (error) {
+    return {
+      error: new Error(ErrorCode.SOMETHING_WENT_WRONG),
+    };
+  }
+};
+
 module.exports = {
   createCustomer,
   payInCustomer,
+  getTransactionLogHistory,
 };
