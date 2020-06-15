@@ -1,3 +1,3 @@
 # Internet Banking
 
-Internet Banking project using NodeJS + MongoDB
+Internet Banking project using NodeJS + Postgres
