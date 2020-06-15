@@ -66,9 +66,45 @@ const deleteContact = async (req, res, next) => {
   }
 };
 
+const getHistory = async (req, res, next) => {
+  try {
+    let condition = {};
+    if (req.query.isReceive) {
+      condition = { ...condition };
+    }
+    if (req.query.isSender) {
+      condition = { ...condition };
+    }
+    if (req.query.isBeRemind) {
+      condition = { ...condition, transaction_type: 3 };
+    }
+    if (req.query.isRemind) {
+      if (req.query.isBeRemind) {
+        condition = { ...condition, transaction_type: 3 };
+      }
+    }
+    if (req.query.all) {
+      condition = {
+        ...condition,
+      };
+    }
+    const result = await customerService.getTransactionLogHistory(req.user, condition);
+    if (result.error) {
+      return next(createErrors(400, result.error.message));
+    }
+    return res.status(200).json({
+      success: true,
+      history: result.data,
+    });
+  } catch (error) {
+    return next(createErrors(400, error.message));
+  }
+};
+
 module.exports = {
   getMyAccount,
   createContact,
   getAllContacts,
   deleteContact,
+  getHistory,
 };

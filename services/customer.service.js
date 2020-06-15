@@ -1,10 +1,11 @@
 /* eslint-disable camelcase */
 const _ = require('lodash');
+const { Op } = require('sequelize');
 const logger = require('../utils/logger');
 const { ErrorCode } = require('../constants/ErrorCode');
 const models = require('../models');
 
-const { Customer } = models;
+const { Customer, TransactionLog } = models;
 
 const getAccount = async customer => {
   try {
@@ -131,9 +132,43 @@ const deleteContact = async (customer, account_number) => {
   }
 };
 
+const getTransactionLogHistory = async (customer, condition) => {
+  try {
+    const account = await Customer.findOne({
+      where: {
+        id: customer.id,
+      },
+    });
+    if (_.isNil(account)) {
+      logger.info(`POSTGRES: ${ErrorCode.CUSTOMER_INFO_NOT_FOUND}`);
+      return {
+        error: new Error(ErrorCode.CUSTOMER_INFO_NOT_FOUND),
+      };
+    }
+    const history = await TransactionLog.findAll({
+      where: {
+        ...condition,
+        [Op.or]: {
+          sender_account_number: account.account_number,
+          receiver_account_number: account.account_number,
+        },
+      },
+      order: [['updated_at', 'DESC']],
+    });
+    return {
+      data: history,
+    };
+  } catch (error) {
+    return {
+      error: new Error(ErrorCode.SOMETHING_WENT_WRONG),
+    };
+  }
+};
+
 module.exports = {
   getAccount,
   getListContacts,
   createContact,
   deleteContact,
+  getTransactionLogHistory,
 };
