@@ -1,4 +1,3 @@
-const { BadRequestError } = require('@sgjobfit/common');
 const { Op } = require('sequelize');
 const createErrors = require('http-errors');
 
@@ -49,7 +48,7 @@ const getTransactionLog = async (req, res, next) => {
     const { account_number: accountNumber } = req.params;
     let condition = {};
     if (!accountNumber) {
-      throw new BadRequestError('Customer is not exists');
+      return next(createErrors(400, 'Account number not found'));
     }
     if (req.query.isReceive) {
       condition = { ...condition, receiver_account_number: accountNumber };
