@@ -1,3 +1,4 @@
+/* eslint-disable camelcase */
 const _ = require('lodash');
 const logger = require('../utils/logger');
 const { ErrorCode } = require('../constants/ErrorCode');
@@ -95,8 +96,44 @@ const createContact = async (customer, { reminder_name: name, account_number: nu
     };
   }
 };
+
+const deleteContact = async (customer, account_number) => {
+  try {
+    const account = await Customer.findOne({
+      where: {
+        id: customer.id,
+      },
+    });
+    if (_.isNil(account)) {
+      logger.info(`POSTGRES: ${ErrorCode.CUSTOMER_INFO_NOT_FOUND}`);
+      return {
+        error: new Error(ErrorCode.CUSTOMER_INFO_NOT_FOUND),
+      };
+    }
+    if (_.find(account.list_contact, { account_number: account_number })) {
+      const newListContacts = _.remove(
+        account.list_contact,
+        item => item.account_number !== account_number
+      );
+      account.setDataValue('list_contact', newListContacts);
+      await account.save();
+      return {
+        data: account,
+      };
+    }
+    return {
+      error: new Error('Account contact is not valid'),
+    };
+  } catch (error) {
+    return {
+      error: new Error(ErrorCode.SOMETHING_WENT_WRONG),
+    };
+  }
+};
+
 module.exports = {
   getAccount,
   getListContacts,
   createContact,
+  deleteContact,
 };

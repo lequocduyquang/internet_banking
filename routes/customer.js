@@ -5,6 +5,7 @@ const {
   getMyAccount,
   createContact,
   getAllContacts,
+  deleteContact,
 } = require('../controllers/customer.controller');
 
 const router = express.Router();
@@ -21,5 +22,6 @@ router.put(
 );
 
 router.get('/list-contacts', getAllContacts);
+router.delete('/list-contacts/:account_number', deleteContact);
 
 module.exports = router;

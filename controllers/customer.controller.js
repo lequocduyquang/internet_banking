@@ -49,8 +49,26 @@ const createContact = async (req, res, next) => {
   }
 };
 
+const deleteContact = async (req, res, next) => {
+  try {
+    // eslint-disable-next-line camelcase
+    const { account_number } = req.params;
+    const result = await customerService.deleteContact(req.user, account_number);
+    if (result.error) {
+      return next(createErrors(400, result.error.message));
+    }
+    return res.status(200).json({
+      success: true,
+      contact: result.data,
+    });
+  } catch (error) {
+    return next(createErrors(400, error.message));
+  }
+};
+
 module.exports = {
   getMyAccount,
   createContact,
   getAllContacts,
+  deleteContact,
 };
