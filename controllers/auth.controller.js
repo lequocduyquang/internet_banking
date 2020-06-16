@@ -159,6 +159,27 @@ const getCustomerProfile = async (req, res, next) => {
   }
 };
 
+const updatePasswordCustomer = async (req, res, next) => {
+  try {
+    const { email, id } = req.user;
+    const { currentPassword, newPassword } = req.body;
+    const result = await authService.updatePassword(
+      { currentPassword, newPassword },
+      { email, id }
+    );
+    if (result.error) {
+      return next(createErrors(400, result.error.message));
+    }
+    return res.status(200).send({
+      user: result.user,
+      accessToken: result.accessToken,
+      refreshToken: result.refreshToken,
+    });
+  } catch (error) {
+    return next(createErrors(400, error.message));
+  }
+};
+
 module.exports = {
   registerEmployee,
   registerAdmin,
@@ -169,4 +190,5 @@ module.exports = {
   getEmployeeProfile,
   getAdminProfile,
   getCustomerProfile,
+  updatePasswordCustomer,
 };

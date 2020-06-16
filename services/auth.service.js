@@ -236,6 +236,34 @@ const getCustomerProfile = async email => {
   }
 };
 
+const updatePassword = async ({ currentPassword, newPassword }, { email, id }) => {
+  try {
+    const customer = await Customer.findOne({
+      where: {
+        email: email,
+      },
+    });
+    if (!customer) {
+      return {
+        error: new Error(ErrorCode.EMAIL_NOT_REGISTERED),
+      };
+    }
+    // Check current password
+    if (!(await customer.matchPassword(currentPassword))) {
+      return {
+        error: new Error(ErrorCode.PASSWORD_NOT_MATCH),
+      };
+    }
+    customer.setDataValue('password', newPassword);
+    await customer.save();
+    return await sendTokenResponse(customer);
+  } catch (error) {
+    return {
+      error: new Error(ErrorCode.SOMETHING_WENT_WRONG),
+    };
+  }
+};
+
 module.exports = {
   registerEmployee,
   registerAdmin,
@@ -246,4 +274,5 @@ module.exports = {
   getEmployeeProfile,
   getAdminProfile,
   getCustomerProfile,
+  updatePassword,
 };

@@ -11,6 +11,7 @@ const {
   getEmployeeProfile,
   getAdminProfile,
   getCustomerProfile,
+  updatePasswordCustomer,
 } = require('../controllers/auth.controller');
 const { requireAuth } = require('../middleware/auth');
 
@@ -102,5 +103,12 @@ router.post(
 router.get('/employee/me', requireAuth, getEmployeeProfile);
 router.get('/customer/me', requireAuth, getCustomerProfile);
 router.get('/admin/me', requireAuth, getAdminProfile);
+
+router.put(
+  '/customer/update_password',
+  [body('currentPassword').isString(), body('newPassword').isString()],
+  requireAuth,
+  updatePasswordCustomer
+);
 
 module.exports = router;
