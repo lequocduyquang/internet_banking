@@ -1,5 +1,4 @@
 const createErrors = require('http-errors');
-
 const customerService = require('../services/customer.service');
 
 const getMyAccount = async (req, res, next) => {
@@ -101,10 +100,44 @@ const getHistory = async (req, res, next) => {
   }
 };
 
+const getAllDebits = async (req, res, next) => {
+  try {
+    const result = await customerService.getAllDebits(req.user);
+    if (result.error) {
+      return next(createErrors(400, result.error.message));
+    }
+    return res.status(200).json({
+      success: true,
+      debits: result.data,
+    });
+  } catch (error) {
+    return next(createErrors(400, error.message));
+  }
+};
+
+const createDebit = async (req, res, next) => {
+  try {
+    // eslint-disable-next-line camelcase
+    const { reminder_id, amount, message } = req.body;
+    const result = await customerService.createDebit(req.user, { reminder_id, amount, message });
+    if (result.error) {
+      return next(createErrors(400, result.error.message));
+    }
+    return res.status(200).json({
+      success: true,
+      new_debit: result.data,
+    });
+  } catch (error) {
+    return next(createErrors(400, error.message));
+  }
+};
+
 module.exports = {
   getMyAccount,
   createContact,
   getAllContacts,
   deleteContact,
   getHistory,
+  getAllDebits,
+  createDebit,
 };

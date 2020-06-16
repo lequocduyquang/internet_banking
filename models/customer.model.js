@@ -85,8 +85,8 @@ module.exports = (sequelize, DataTypes) => {
   };
 
   Customer.associate = models => {
-    Customer.hasMany(models.Debits, { foreignKey: 'creator_customer_id' });
-    Customer.hasMany(models.Debits, { foreignKey: 'reminder_id' });
+    Customer.hasMany(models.Debit, { foreignKey: 'creator_customer_id' });
+    Customer.hasMany(models.Debit, { foreignKey: 'reminder_id' });
   };
 
   Customer.prototype.matchPassword = async function (enteredPassword) {

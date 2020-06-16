@@ -3,9 +3,11 @@ const _ = require('lodash');
 const { Op } = require('sequelize');
 const logger = require('../utils/logger');
 const { ErrorCode } = require('../constants/ErrorCode');
+const { redisClient } = require('../libs/redis');
 const models = require('../models');
 
-const { Customer, TransactionLog } = models;
+const { Customer, TransactionLog, Debit } = models;
+const CHANNEL_DEBIT = 'debit';
 
 const getAccount = async customer => {
   try {
@@ -165,10 +167,53 @@ const getTransactionLogHistory = async (customer, condition) => {
   }
 };
 
+const getAllDebits = async customer => {
+  try {
+    const debits = await Debit.findAll({
+      where: {
+        [Op.or]: {
+          creator_customer_id: customer.id,
+          reminder_id: customer.id,
+        },
+      },
+      order: [['updated_at', 'DESC']],
+    });
+    return {
+      data: debits,
+    };
+  } catch (error) {
+    return {
+      error: new Error(ErrorCode.SOMETHING_WENT_WRONG),
+    };
+  }
+};
+
+const createDebit = async (customer, { reminder_id, amount, message }) => {
+  try {
+    const newDebit = await Debit.create({
+      creator_customer_id: customer.id,
+      reminder_id: reminder_id,
+      amount: amount,
+      message: message,
+    });
+    const cachedData = JSON.stringify(newDebit);
+    await redisClient.publishAsync(CHANNEL_DEBIT, cachedData);
+    return {
+      data: newDebit,
+    };
+  } catch (error) {
+    return {
+      error: new Error(ErrorCode.SOMETHING_WENT_WRONG),
+    };
+  }
+};
+
 module.exports = {
   getAccount,
   getListContacts,
   createContact,
   deleteContact,
   getTransactionLogHistory,
+  getAllDebits,
+  createDebit,
 };

@@ -1,8 +1,8 @@
 const sequelizePaginate = require('sequelize-paginate');
 
 module.exports = (sequelize, DataTypes) => {
-  const Debits = sequelize.define(
-    'Debits',
+  const Debit = sequelize.define(
+    'Debit',
     {
       id: {
         type: DataTypes.INTEGER,
@@ -20,16 +20,16 @@ module.exports = (sequelize, DataTypes) => {
       created_at: DataTypes.DATE,
     },
     {
-      tableName: 'Debits',
+      tableName: 'Debit',
       timestamps: false,
     }
   );
 
-  sequelizePaginate.paginate(Debits);
+  sequelizePaginate.paginate(Debit);
 
-  Debits.associate = models => {
-    Debits.belongsTo(models.Customer, { foreignKey: 'creator_customer_id', target_key: 'id' });
-    Debits.belongsTo(models.Customer, { foreignKey: 'reminder_id', target_key: 'id' });
+  Debit.associate = models => {
+    Debit.belongsTo(models.Customer, { foreignKey: 'creator_customer_id', target_key: 'id' });
+    Debit.belongsTo(models.Customer, { foreignKey: 'reminder_id', target_key: 'id' });
   };
-  return Debits;
+  return Debit;
 };

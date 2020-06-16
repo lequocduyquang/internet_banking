@@ -7,6 +7,8 @@ const {
   getAllContacts,
   deleteContact,
   getHistory,
+  getAllDebits,
+  createDebit,
 } = require('../controllers/customer.controller');
 
 const router = express.Router();
@@ -25,5 +27,8 @@ router.put(
 router.get('/list-contacts', getAllContacts);
 router.delete('/list-contacts/:account_number', deleteContact);
 router.get('/history', getHistory);
+
+router.get('/debits', getAllDebits);
+router.post('/debit', createDebit);
 
 module.exports = router;

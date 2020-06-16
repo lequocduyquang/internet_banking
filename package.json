@@ -40,7 +40,10 @@
   },
   "dependencies": {
     "@sgjobfit/common": "^1.0.6",
+    "axios": "^0.19.2",
     "bcrypt": "^4.0.1",
+    "bluebird": "^3.7.2",
+    "bull": "^3.14.0",
     "cors": "^2.8.5",
     "dotenv": "^8.2.0",
     "express": "^4.17.1",
@@ -55,6 +58,7 @@
     "pg": "^8.2.1",
     "pg-hstore": "^2.3.3",
     "random-js": "^2.1.0",
+    "redis": "^3.0.2",
     "sequelize": "^5.21.9",
     "sequelize-paginate": "^1.1.6",
     "winston": "^3.2.1"
