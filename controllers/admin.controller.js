@@ -74,18 +74,30 @@ const getAllTransaction = async (req, res, next) => {
       sortBy: req.query.sortBy || 'created_at',
       orderBy: req.query.orderBy || 'DESC',
     };
+    const queryDate = () => {
+      let result = null;
+      if (begin) {
+        result = {
+          [Op.gte]: begin,
+        };
+      }
+      if (end) {
+        result = {
+          [Op.lte]: end,
+        };
+      }
+      if (begin && end) {
+        result = {
+          [Op.gte]: begin,
+          [Op.lte]: end,
+        };
+      }
+      return result;
+    };
+
     const query = _.omitBy(
       {
-        created_at: _.get(
-          _.omitBy(
-            {
-              [Op.gte]: begin || null,
-              [Op.lte]: end || null,
-            },
-            _.isNil
-          ),
-          ''
-        ),
+        created_at: queryDate(),
         partner_code: partner || null,
       },
       _.isNil
