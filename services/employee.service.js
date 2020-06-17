@@ -45,7 +45,9 @@ const createCustomer = async ({ username, email, password, fullname, phone, addr
 const payInCustomer = async ({ accountNumber, amount }) => {
   try {
     const customer = await Customer.findOne({
-      account_number: accountNumber,
+      where: {
+        account_number: accountNumber,
+      },
     });
     if (!customer) {
       return {
@@ -89,8 +91,31 @@ const getTransactionLogHistory = async condition => {
   }
 };
 
+const verifyCustomer = async accountNumber => {
+  try {
+    const customer = await Customer.findOne({
+      where: {
+        account_number: accountNumber,
+      },
+    });
+    if (!customer) {
+      return {
+        error: new Error(ErrorCode.CUSTOMER_INFO_NOT_FOUND),
+      };
+    }
+    return {
+      data: customer,
+    };
+  } catch (error) {
+    return {
+      error: new Error(ErrorCode.SOMETHING_WENT_WRONG),
+    };
+  }
+};
+
 module.exports = {
   createCustomer,
   payInCustomer,
   getTransactionLogHistory,
+  verifyCustomer,
 };

@@ -5,6 +5,7 @@ const { verifyEmployee } = require('../middleware/auth');
 const {
   createCustomer,
   payInCustomer,
+  verifyCustomer,
   getTransactionLog,
 } = require('../controllers/employee.controller');
 
@@ -29,6 +30,12 @@ router.post(
   createCustomer
 );
 
+router.post(
+  '/verify-customer',
+  [body('account_number').isString().withMessage('Account number must be valid')],
+  validateRequest,
+  verifyCustomer
+);
 router.post(
   '/payin',
   [body('account_number').isString(), body('amount').isNumeric()],
