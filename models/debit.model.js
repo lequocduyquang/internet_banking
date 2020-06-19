@@ -20,7 +20,7 @@ module.exports = (sequelize, DataTypes) => {
       created_at: DataTypes.DATE,
     },
     {
-      tableName: 'Debit',
+      tableName: 'debit',
       timestamps: false,
     }
   );

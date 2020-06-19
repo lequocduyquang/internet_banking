@@ -7,6 +7,7 @@ const {
   getAllContacts,
   deleteContact,
   getHistory,
+  verifyContact,
   getAllDebits,
   createDebit,
 } = require('../controllers/customer.controller');
@@ -28,6 +29,12 @@ router.get('/list-contacts', getAllContacts);
 router.delete('/list-contacts/:account_number', deleteContact);
 router.get('/history', getHistory);
 
+router.post(
+  '/verify-contact',
+  [body('account_number').isString().withMessage('Account number must be valid')],
+  validateRequest,
+  verifyContact
+);
 router.get('/debits', getAllDebits);
 router.post('/debit', createDebit);
 

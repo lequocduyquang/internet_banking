@@ -65,6 +65,22 @@ const deleteContact = async (req, res, next) => {
   }
 };
 
+const verifyContact = async (req, res, next) => {
+  try {
+    const { account_number: accountNumber } = req.body;
+    const result = await customerService.verifyContact(accountNumber);
+    if (result.error) {
+      return next(createErrors(400, result.error.message));
+    }
+    return res.status(200).json({
+      success: true,
+      customer: result.data,
+    });
+  } catch (error) {
+    return next(createErrors(400, error.message));
+  }
+};
+
 const getHistory = async (req, res, next) => {
   try {
     let condition = {};
@@ -137,6 +153,7 @@ module.exports = {
   createContact,
   getAllContacts,
   deleteContact,
+  verifyContact,
   getHistory,
   getAllDebits,
   createDebit,

@@ -1,13 +1,18 @@
 /* eslint-disable camelcase */
 const _ = require('lodash');
 const { Op } = require('sequelize');
+const Bull = require('bull');
+
+const moment = require('moment');
 const logger = require('../utils/logger');
 const { ErrorCode } = require('../constants/ErrorCode');
+const { NOTI_DEBIT_QUEUE, REDIS_URL } = require('../constants/queue');
 const { redisClient } = require('../libs/redis');
 const models = require('../models');
 
 const { Customer, TransactionLog, Debit } = models;
-const CHANNEL_DEBIT = 'debit';
+
+const notiDebitQueue = new Bull(NOTI_DEBIT_QUEUE, REDIS_URL);
 
 const getAccount = async customer => {
   try {
@@ -167,6 +172,28 @@ const getTransactionLogHistory = async (customer, condition) => {
   }
 };
 
+const verifyContact = async accountNumber => {
+  try {
+    const customer = await Customer.findOne({
+      where: {
+        account_number: accountNumber,
+      },
+    });
+    if (!customer) {
+      return {
+        error: new Error(ErrorCode.CUSTOMER_INFO_NOT_FOUND),
+      };
+    }
+    return {
+      data: customer,
+    };
+  } catch (error) {
+    return {
+      error: new Error(ErrorCode.SOMETHING_WENT_WRONG),
+    };
+  }
+};
+
 const getAllDebits = async customer => {
   try {
     const debits = await Debit.findAll({
@@ -196,8 +223,23 @@ const createDebit = async (customer, { reminder_id, amount, message }) => {
       amount: amount,
       message: message,
     });
-    const cachedData = JSON.stringify(newDebit);
-    await redisClient.publishAsync(CHANNEL_DEBIT, cachedData);
+    const cachedData = {
+      creator_customer_id: customer.id,
+      reminder_id: reminder_id,
+      amount: amount,
+      message: message,
+      created_at: moment(),
+    };
+    const key = `Debit:${newDebit.id}Creator:${customer.id}:Reminder:${reminder_id}`;
+    const cacheKey = await redisClient.getAsync(key);
+
+    if (!cacheKey) {
+      await redisClient.setexAsync(key, 86400, key); // expire in 1 day
+      await notiDebitQueue.add(cachedData, {
+        delay: 10 * 60 * 1000,
+      });
+    }
+
     return {
       data: newDebit,
     };
@@ -214,6 +256,7 @@ module.exports = {
   createContact,
   deleteContact,
   getTransactionLogHistory,
+  verifyContact,
   getAllDebits,
   createDebit,
 };

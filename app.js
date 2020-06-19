@@ -22,7 +22,7 @@ const limiter = rateLimit({
 app.use(limiter);
 
 app.get('/health', (req, res) => {
-  res.send('Welcome to Internet Banking');
+  res.send('Welcome to Internet Banking API');
 });
 
 app.use('/api/v1/auth', require('./routes/auth'));
