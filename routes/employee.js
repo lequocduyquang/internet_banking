@@ -38,7 +38,7 @@ router.post(
 );
 router.post(
   '/payin',
-  [body('account_number').isString(), body('amount').isNumeric()],
+  [body('account_number').isString(), body('amount').isDecimal()],
   validateRequest,
   payInCustomer
 );

@@ -54,7 +54,8 @@ const payInCustomer = async ({ accountNumber, amount }) => {
         error: new Error(ErrorCode.CUSTOMER_INFO_NOT_FOUND),
       };
     }
-    customer.setDataValue('account_balance', customer.account_balance + amount);
+    const updateAmount = customer.account_balance + parseFloat(amount);
+    customer.setDataValue('account_balance', updateAmount);
     await customer.save();
     const transactionLog = await TransactionLog.create({
       transaction_type: 1,
