@@ -59,7 +59,8 @@ const payInCustomer = async ({ accountNumber, amount }) => {
     await customer.save();
     const transactionLog = await TransactionLog.create({
       transaction_type: 1,
-      sender_account_number: accountNumber,
+      sender_account_number: 'GDV',
+      receiver_account_number: accountNumber,
       amount,
       message: `${customer.fullname} nộp ${amount}vnd vào tài khoản`,
     });
@@ -76,11 +77,12 @@ const payInCustomer = async ({ accountNumber, amount }) => {
   }
 };
 
-const getTransactionLogHistory = async condition => {
+const getTransactionLogHistory = async (condition, paginationOpts = {}) => {
   try {
-    const history = await TransactionLog.findAll({
+    const history = await TransactionLog.paginate({
       where: condition,
       order: [['updated_at', 'DESC']],
+      ...paginationOpts,
     });
     return {
       data: history,

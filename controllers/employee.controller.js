@@ -1,6 +1,6 @@
 const { Op } = require('sequelize');
 const createErrors = require('http-errors');
-
+const { buildPaginationOpts, decoratePaginatedResult } = require('../utils/paginate');
 const employeeService = require('../services/employee.service');
 
 const createCustomer = async (req, res, next) => {
@@ -91,13 +91,13 @@ const getTransactionLog = async (req, res, next) => {
         },
       };
     }
-    const result = await employeeService.getTransactionLogHistory(condition);
+    const paginationOpts = buildPaginationOpts(req);
+    const result = await employeeService.getTransactionLogHistory(condition, paginationOpts);
     if (result.error) {
       return next(createErrors(400, result.error.message));
     }
-    return res.status(200).json({
-      success: true,
-      history: result.data,
+    return res.status(200).send({
+      ...decoratePaginatedResult(result.data),
     });
   } catch (error) {
     return next(createErrors(400, error.message));

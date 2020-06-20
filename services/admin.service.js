@@ -1,5 +1,4 @@
 const _ = require('lodash');
-const sequelize = require('sequelize');
 const { ErrorCode } = require('../constants/ErrorCode');
 const logger = require('../utils/logger');
 const models = require('../models');
