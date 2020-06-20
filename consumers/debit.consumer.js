@@ -1,20 +1,17 @@
 const Bull = require('bull');
 const { NOTI_DEBIT_QUEUE, REDIS_URL } = require('../constants/queue');
 const logger = require('../utils/logger');
+const { sendMail } = require('../utils/mailer');
 
 const notiDebitQueue = new Bull(NOTI_DEBIT_QUEUE, REDIS_URL);
-console.log('Queue: ', notiDebitQueue);
+
 logger.info('Start consumer debit ...');
 
-const sendNoti = async data => {
-  console.log('Data: ', data);
-};
-
-const consume = async () => {
-  console.log('123');
+const consume = () => {
   notiDebitQueue.process(async job => {
-    console.log('Job: ', job);
-    await sendNoti(job.data);
+    const message = `<p>${job.data}</p>`;
+    // eslint-disable-next-line no-return-await
+    return await sendMail('duyquangbtx@gmail.com', message);
   });
 };
 

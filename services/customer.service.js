@@ -236,7 +236,7 @@ const createDebit = async (customer, { reminder_id, amount, message }) => {
     if (!cacheKey) {
       await redisClient.setexAsync(key, 86400, key); // expire in 1 day
       await notiDebitQueue.add(cachedData, {
-        delay: 10 * 60 * 1000,
+        delay: 60000,
       });
     }
 
