@@ -76,17 +76,17 @@ const getAllTransaction = async (req, res, next) => {
     };
     const queryDate = () => {
       let result = null;
-      if (begin) {
+      if (begin && begin !== 'null') {
         result = {
           [Op.gte]: begin,
         };
       }
-      if (end) {
+      if (end && end !== 'null') {
         result = {
           [Op.lte]: end,
         };
       }
-      if (begin && end) {
+      if (begin && begin !== 'null' && end && end !== 'null') {
         result = {
           [Op.gte]: begin,
           [Op.lte]: end,
@@ -94,7 +94,6 @@ const getAllTransaction = async (req, res, next) => {
       }
       return result;
     };
-
     const query = _.omitBy(
       {
         created_at: queryDate(),
