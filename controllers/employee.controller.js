@@ -1,3 +1,5 @@
+/* eslint-disable consistent-return */
+const _ = require('lodash');
 const { Op } = require('sequelize');
 const createErrors = require('http-errors');
 const { buildPaginationOpts, decoratePaginatedResult } = require('../utils/paginate');
@@ -43,7 +45,6 @@ const verifyCustomer = async (req, res, next) => {
 };
 
 const payInCustomer = async (req, res, next) => {
-  console.log('Step 1:');
   try {
     const { account_number: accountNumber, amount } = req.body;
     console.log('Req body: ', req.body);
@@ -64,40 +65,47 @@ const payInCustomer = async (req, res, next) => {
 const getTransactionLog = async (req, res, next) => {
   try {
     const { account_number: accountNumber } = req.params;
-    let condition = {};
+    const { isReceiver, isSender, isRemind, isBeRemind } = req.query;
     if (!accountNumber) {
-      return next(createErrors(400, 'Account number not found'));
+      return next(createErrors(400, 'Account number must be valid'));
     }
-    if (req.query.isReceive) {
-      condition = { ...condition, receiver_account_number: accountNumber };
+    const sort = {
+      sortBy: req.query.sortBy || 'created_at',
+      orderBy: req.query.orderBy || 'DESC',
+    };
+
+    let condition = {};
+    if (isReceiver && !isSender) {
+      condition = { receiver_account_number: accountNumber };
     }
-    if (req.query.isSender) {
-      condition = { ...condition, sender_account_number: accountNumber };
+    if (isSender && !isReceiver) {
+      condition = { sender_account_number: accountNumber };
     }
-    if (req.query.isBeRemind) {
-      condition = { ...condition, transaction_type: 3, sender_account_number: accountNumber };
-    }
-    if (req.query.isRemind) {
-      if (req.query.isBeRemind) {
-        condition = { ...condition, transaction_type: 3, receiver_account_number: accountNumber };
-      }
-    }
-    if (req.query.all) {
+    if (isReceiver && isSender) {
       condition = {
-        ...condition,
         [Op.or]: {
           sender_account_number: accountNumber,
           receiver_account_number: accountNumber,
         },
       };
     }
+
+    // Nhac no DEBIT - Transaction type = 3
+    if (isBeRemind) {
+      condition = { ...condition, transaction_type: 3, sender_account_number: accountNumber };
+    }
+    if (isRemind) {
+      if (isBeRemind) {
+        condition = { ...condition, transaction_type: 3, receiver_account_number: accountNumber };
+      }
+    }
     const paginationOpts = buildPaginationOpts(req);
-    const result = await employeeService.getTransactionLogHistory(condition, paginationOpts);
+    const result = await employeeService.getTransactionLogHistory(condition, sort, paginationOpts);
     if (result.error) {
       return next(createErrors(400, result.error.message));
     }
     return res.status(200).send({
-      ...decoratePaginatedResult(result.data),
+      ...decoratePaginatedResult(result.data, paginationOpts),
     });
   } catch (error) {
     return next(createErrors(400, error.message));

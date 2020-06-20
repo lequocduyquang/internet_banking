@@ -77,11 +77,11 @@ const payInCustomer = async ({ accountNumber, amount }) => {
   }
 };
 
-const getTransactionLogHistory = async (condition, paginationOpts = {}) => {
+const getTransactionLogHistory = async (condition, sort, paginationOpts = {}) => {
   try {
     const history = await TransactionLog.paginate({
       where: condition,
-      order: [['updated_at', 'DESC']],
+      order: [[`${sort.sortBy}`, `${sort.orderBy}`]],
       ...paginationOpts,
     });
     return {
