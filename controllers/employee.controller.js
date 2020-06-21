@@ -65,6 +65,12 @@ const payInCustomer = async (req, res, next) => {
 const getTransactionLog = async (req, res, next) => {
   try {
     const { account_number: accountNumber } = req.params;
+
+    const customer = await employeeService.verifyCustomer(accountNumber);
+    if (customer.error) {
+      return next(createErrors(400, customer.error.message));
+    }
+
     const { isReceiver, isSender, isRemind, isBeRemind } = req.query;
     if (!accountNumber) {
       return next(createErrors(400, 'Account number must be valid'));
@@ -81,7 +87,7 @@ const getTransactionLog = async (req, res, next) => {
     if (isSender && !isReceiver) {
       condition = { sender_account_number: accountNumber };
     }
-    if (isReceiver && isSender) {
+    if ((isReceiver && isSender) || (!isReceiver && !isSender && !isRemind && !isBeRemind)) {
       condition = {
         [Op.or]: {
           sender_account_number: accountNumber,
@@ -100,6 +106,7 @@ const getTransactionLog = async (req, res, next) => {
       }
     }
     const paginationOpts = buildPaginationOpts(req);
+    console.log('condition: ', condition);
     const result = await employeeService.getTransactionLogHistory(condition, sort, paginationOpts);
     if (result.error) {
       return next(createErrors(400, result.error.message));
