@@ -17,6 +17,11 @@ module.exports = {
     url: process.env.DATABASE_URL,
     dialect: 'postgres',
   },
+  redis: {
+    port: process.env.REDIS_PORT,
+    host: process.env.REDIS_HOST,
+    password: process.env.REDIS_PASSWORD,
+  },
   pgp: {
     PRIVATE_KEY: `-----BEGIN PGP PRIVATE KEY BLOCK-----
 Version: Keybase OpenPGP v1.0.0

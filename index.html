@@ -12,6 +12,11 @@
       socket.on('connect', function () {
         console.log('Test connection');
       });
+
+      socket.emit('init', 'YOUR_ACCESS_TOKEN');
+      socket.on('initSuccessful', data => {
+        console.log('Data: ', data.payload);
+      });
     </script>
   </body>
 </html>

@@ -8,6 +8,7 @@ const cors = require('cors');
 const { ErrorCode } = require('./constants/ErrorCode');
 const logger = require('./utils/logger');
 require('express-async-errors');
+const { initSocket } = require('./libs/socket');
 
 dotenv.config();
 
@@ -29,6 +30,7 @@ const limiter = rateLimit({
 });
 io.on('connection', socket => {
   console.log('Socket ID: ', socket.id);
+  initSocket(socket);
   socket.on('disconnect', function () {
     console.log('Sockets disconnected.');
   });
