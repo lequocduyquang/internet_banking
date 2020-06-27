@@ -15,7 +15,7 @@ const {
 const router = express.Router();
 const { requireAuth } = require('../middleware/auth');
 
-// router.use(requireAuth);
+router.use(requireAuth);
 
 router.get('/my-account', getMyAccount);
 router.put(

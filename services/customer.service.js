@@ -244,6 +244,7 @@ const createDebit = async (customer, { reminder_id, amount, message }) => {
       data: newDebit,
     };
   } catch (error) {
+    console.log(error);
     return {
       error: new Error(ErrorCode.SOMETHING_WENT_WRONG),
     };

@@ -1,6 +1,8 @@
 const express = require('express');
 const morgan = require('morgan');
 const dotenv = require('dotenv');
+const socketIO = require('socket.io');
+const http = require('http');
 const rateLimit = require('express-rate-limit');
 const cors = require('cors');
 const { ErrorCode } = require('./constants/ErrorCode');
@@ -10,13 +12,26 @@ require('express-async-errors');
 dotenv.config();
 
 const app = express();
+const server = http.Server(app);
+const io = socketIO(server);
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cors());
+app.use((req, res, next) => {
+  req.io = io;
+  next();
+});
 app.use(morgan('dev'));
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000,
   max: 100,
+});
+io.on('connection', socket => {
+  console.log('Socket ID: ', socket.id);
+  socket.on('disconnect', function () {
+    console.log('Sockets disconnected.');
+  });
 });
 
 app.use(limiter);
@@ -49,6 +64,6 @@ app.use(function (err, req, res, next) {
 });
 
 const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => logger.info(`Server started on port ${PORT}`));
+server.listen(PORT, () => logger.info(`Server started on port ${PORT}`));
 
 module.exports = app;
