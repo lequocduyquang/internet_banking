@@ -1,5 +1,7 @@
 const createErrors = require('http-errors');
 const customerService = require('../services/customer.service');
+const pusher = require('../libs/pusher');
+const { channels } = require('../libs/pusher/channels');
 
 const getMyAccount = async (req, res, next) => {
   try {
@@ -135,12 +137,11 @@ const createDebit = async (req, res, next) => {
   try {
     // eslint-disable-next-line camelcase
     const { reminder_id, amount, message } = req.body;
-    const io = req.app.get('io');
     const result = await customerService.createDebit(req.user, { reminder_id, amount, message });
     if (result.error) {
       return next(createErrors(400, result.error.message));
     }
-    io.emit('debitNotification', 'Test debit noti');
+    pusher.trigger(channels[0].debitChannel, 'debit_noti', result.data);
     return res.status(200).json({
       success: true,
       new_debit: result.data,

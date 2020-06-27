@@ -3,8 +3,6 @@ const morgan = require('morgan');
 const dotenv = require('dotenv');
 const rateLimit = require('express-rate-limit');
 const cors = require('cors');
-const socketIO = require('socket.io');
-const http = require('http');
 const { ErrorCode } = require('./constants/ErrorCode');
 const logger = require('./utils/logger');
 require('express-async-errors');
@@ -51,16 +49,6 @@ app.use(function (err, req, res, next) {
 });
 
 const PORT = process.env.PORT || 5000;
-const server = app.listen(PORT, () => logger.info(`Server started on port ${PORT}`));
-const io = socketIO(server);
-
-io.on('connection', socket => {
-  console.log('User connected with socket id ', socket.id);
-  socket.on('disconnect', () => {
-    console.log('Sockets disconnected.');
-  });
-});
-
-app.set('io', io);
+app.listen(PORT, () => logger.info(`Server started on port ${PORT}`));
 
 module.exports = app;
