@@ -23,20 +23,10 @@ const limiter = rateLimit({
 
 app.use(limiter);
 
-const server = http.createServer(app);
-const io = socketIO(server);
-
-io.on('connection', socket => {
-  console.log('User connected with socket id ', socket.id);
-  socket.on('disconnect', () => {
-    console.log('Sockets disconnected.');
-  });
-});
-
 app.get('/health', (req, res) => {
   res.send('Welcome to Internet Banking API');
 });
-app.set('io', io);
+// app.set('io', io);
 
 app.use('/api/v1/auth', require('./routes/auth'));
 app.use('/api/v1/partner', require('./routes/partner'));
@@ -62,6 +52,14 @@ app.use(function (err, req, res, next) {
 });
 
 const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => logger.info(`Server started on port ${PORT}`));
+const server = app.listen(PORT, () => logger.info(`Server started on port ${PORT}`));
+const io = socketIO(server);
+
+io.on('connection', socket => {
+  console.log('User connected with socket id ', socket.id);
+  socket.on('disconnect', () => {
+    console.log('Sockets disconnected.');
+  });
+});
 
 module.exports = app;
