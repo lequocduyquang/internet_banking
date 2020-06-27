@@ -26,7 +26,6 @@ app.use(limiter);
 app.get('/health', (req, res) => {
   res.send('Welcome to Internet Banking API');
 });
-// app.set('io', io);
 
 app.use('/api/v1/auth', require('./routes/auth'));
 app.use('/api/v1/partner', require('./routes/partner'));
@@ -61,5 +60,7 @@ io.on('connection', socket => {
     console.log('Sockets disconnected.');
   });
 });
+
+app.set('io', io);
 
 module.exports = app;

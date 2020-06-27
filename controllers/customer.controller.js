@@ -136,11 +136,11 @@ const createDebit = async (req, res, next) => {
     // eslint-disable-next-line camelcase
     const { reminder_id, amount, message } = req.body;
     const io = req.app.get('io');
-    io.emit('hey', 'I just met you');
     const result = await customerService.createDebit(req.user, { reminder_id, amount, message });
     if (result.error) {
       return next(createErrors(400, result.error.message));
     }
+    io.emit('debitNotification', 'Test debit noti');
     return res.status(200).json({
       success: true,
       new_debit: result.data,
