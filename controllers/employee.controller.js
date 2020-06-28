@@ -3,6 +3,7 @@ const _ = require('lodash');
 const { Op } = require('sequelize');
 const createErrors = require('http-errors');
 const { buildPaginationOpts, decoratePaginatedResult } = require('../utils/paginate');
+const { buildQueryOptions } = require('../utils/query');
 const employeeService = require('../services/employee.service');
 
 const createCustomer = async (req, res, next) => {
@@ -138,9 +139,43 @@ const getTransactionLog = async (req, res, next) => {
   }
 };
 
+const getTransactionLogV2 = async (req, res, next) => {
+  try {
+    const { account_number: accountNumber } = req.params;
+    const customer = await employeeService.verifyCustomer(accountNumber);
+    if (customer.error) {
+      return next(createErrors(400, customer.error.message));
+    }
+    if (!accountNumber) {
+      return next(createErrors(400, 'Account number must be valid'));
+    }
+    const sort = {
+      sortBy: req.query.sortBy || 'created_at',
+      orderBy: req.query.orderBy || 'DESC',
+    };
+    const q = JSON.parse(req.query.q);
+    const queryData = buildQueryOptions(_.pickBy(q, _.identity), accountNumber);
+    const paginationOpts = buildPaginationOpts(req);
+    const result = await employeeService.getTransactionLogHistoryV2(
+      queryData,
+      sort,
+      paginationOpts
+    );
+    if (result.error) {
+      return next(createErrors(400, result.error.message));
+    }
+    return res.status(200).send({
+      ...decoratePaginatedResult(result.data, paginationOpts),
+    });
+  } catch (error) {
+    return next(createErrors(400, error.message));
+  }
+};
+
 module.exports = {
   createCustomer,
   payInCustomer,
   verifyCustomer,
   getTransactionLog,
+  getTransactionLogV2,
 };

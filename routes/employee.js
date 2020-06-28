@@ -7,6 +7,7 @@ const {
   payInCustomer,
   verifyCustomer,
   getTransactionLog,
+  getTransactionLogV2,
 } = require('../controllers/employee.controller');
 
 const router = express.Router();
@@ -45,5 +46,6 @@ router.post(
 );
 
 router.get('/history/:account_number', getTransactionLog);
+router.get('/history/test/:account_number', getTransactionLogV2);
 
 module.exports = router;

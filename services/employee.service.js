@@ -88,6 +88,24 @@ const getTransactionLogHistory = async (condition, sort, paginationOpts = {}) =>
       data: history,
     };
   } catch (error) {
+    console.log('Errror: ', error);
+    return {
+      error: new Error(ErrorCode.SOMETHING_WENT_WRONG),
+    };
+  }
+};
+
+const getTransactionLogHistoryV2 = async (condition, sort, paginationOpts = {}) => {
+  try {
+    const history = await TransactionLog.paginate({
+      where: condition.value,
+      order: [[`${sort.sortBy}`, `${sort.orderBy}`]],
+      ...paginationOpts,
+    });
+    return {
+      data: history,
+    };
+  } catch (error) {
     return {
       error: new Error(ErrorCode.SOMETHING_WENT_WRONG),
     };
@@ -120,5 +138,6 @@ module.exports = {
   createCustomer,
   payInCustomer,
   getTransactionLogHistory,
+  getTransactionLogHistoryV2,
   verifyCustomer,
 };
