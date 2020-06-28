@@ -70,8 +70,9 @@ const getTransactionLog = async (req, res, next) => {
     if (customer.error) {
       return next(createErrors(400, customer.error.message));
     }
+    const q = JSON.parse(req.query.q);
+    const { isReceiver, isSender, isRemind, isBeRemind } = q;
 
-    const { isReceiver, isSender, isRemind, isBeRemind } = req.query;
     if (!accountNumber) {
       return next(createErrors(400, 'Account number must be valid'));
     }
@@ -101,12 +102,9 @@ const getTransactionLog = async (req, res, next) => {
       condition = { ...condition, transaction_type: 3, sender_account_number: accountNumber };
     }
     if (isRemind) {
-      if (isBeRemind) {
-        condition = { ...condition, transaction_type: 3, receiver_account_number: accountNumber };
-      }
+      condition = { ...condition, transaction_type: 3, receiver_account_number: accountNumber };
     }
     const paginationOpts = buildPaginationOpts(req);
-    console.log('condition: ', condition);
     const result = await employeeService.getTransactionLogHistory(condition, sort, paginationOpts);
     if (result.error) {
       return next(createErrors(400, result.error.message));
