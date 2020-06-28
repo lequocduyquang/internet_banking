@@ -81,30 +81,52 @@ const getTransactionLog = async (req, res, next) => {
     };
 
     let condition = {};
-    if (isReceiver && !isSender) {
+
+    if (isReceiver) {
       condition = { receiver_account_number: accountNumber };
     }
-    if (isSender && !isReceiver) {
-      condition = { sender_account_number: accountNumber };
+
+    if (isSender) {
+      condition = { ...condition, sender_account_number: accountNumber };
     }
-    if ((isReceiver && isSender) || (!isReceiver && !isSender && !isRemind && !isBeRemind)) {
+
+    if (isRemind && isBeRemind) {
       condition = {
-        [Op.or]: {
-          sender_account_number: accountNumber,
-          receiver_account_number: accountNumber,
+        ...condition,
+        [Op.and]: {
+          [Op.or]: {
+            sender_account_number: accountNumber,
+            receiver_account_number: accountNumber,
+          },
+          transaction_type: 3,
         },
       };
     }
 
-    // Nhac no DEBIT - Transaction type = 3
-    if (isBeRemind) {
-      condition = { ...condition, transaction_type: 3, sender_account_number: accountNumber };
+    if (isRemind && !isBeRemind) {
+      condition = {
+        ...condition,
+        [Op.and]: { receiver_account_number: accountNumber, transaction_type: 3 },
+      };
     }
-    if (isRemind) {
-      condition = { ...condition, transaction_type: 3, receiver_account_number: accountNumber };
+
+    if (isBeRemind && !isRemind) {
+      condition = {
+        ...condition,
+        [Op.and]: { sender_account_number: accountNumber, transaction_type: 3 },
+      };
     }
+
+    if (!isReceiver && !isSender && !isBeRemind && !isRemind) {
+      condition = { receiver_account_number: accountNumber, sender_account_number: accountNumber };
+    }
+
     const paginationOpts = buildPaginationOpts(req);
-    const result = await employeeService.getTransactionLogHistory(condition, sort, paginationOpts);
+    const result = await employeeService.getTransactionLogHistory(
+      { [Op.or]: condition },
+      sort,
+      paginationOpts
+    );
     if (result.error) {
       return next(createErrors(400, result.error.message));
     }
