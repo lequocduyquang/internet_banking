@@ -3,6 +3,7 @@ const { Random } = require('random-js');
 const models = require('../models');
 const { ErrorCode } = require('../constants/ErrorCode');
 const logger = require('../utils/logger');
+const { sendMail } = require('../utils/mailer');
 
 const { Employee, Admin, Customer } = models;
 
@@ -264,6 +265,42 @@ const updatePassword = async ({ currentPassword, newPassword }, { email, id }) =
   }
 };
 
+const sendEmailCustomer = async (req, { email }) => {
+  const user = await Customer.findOne({
+    where: { email: email },
+  });
+  if (!user) {
+    return {
+      error: new Error(ErrorCode.EMAIL_NOT_REGISTERED),
+    };
+  }
+  const resetPassUrl = `${req.protocol}://${req.get('host')}/api/v1/auth/customer/reset_password//${
+    user.id
+  }`;
+  const message = `<p>Please click to <i>${resetPassUrl}</i> to reset your password</p>`;
+
+  // eslint-disable-next-line no-return-await
+  return await sendMail(user.email, message);
+};
+
+const reset = async ({ newPassword, userID }) => {
+  try {
+    const customer = await Customer.findOne({
+      where: {
+        id: userID,
+      },
+    });
+    await customer.resetPassword(newPassword);
+    return {
+      user: customer,
+    };
+  } catch (error) {
+    return {
+      error: new Error(ErrorCode.SOMETHING_WENT_WRONG),
+    };
+  }
+};
+
 module.exports = {
   registerEmployee,
   registerAdmin,
@@ -275,4 +312,6 @@ module.exports = {
   getAdminProfile,
   getCustomerProfile,
   updatePassword,
+  sendEmailCustomer,
+  reset,
 };

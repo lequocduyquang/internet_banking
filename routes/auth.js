@@ -12,6 +12,8 @@ const {
   getAdminProfile,
   getCustomerProfile,
   updatePasswordCustomer,
+  forgotPasswordCustomer,
+  resetPasswordCustomer,
 } = require('../controllers/auth.controller');
 const { requireAuth } = require('../middleware/auth');
 
@@ -109,6 +111,20 @@ router.put(
   [body('currentPassword').isString(), body('newPassword').isString()],
   requireAuth,
   updatePasswordCustomer
+);
+
+router.post(
+  '/customer/forgot_password',
+  [body('email').isEmail().withMessage('Email must be valid')],
+  validateRequest,
+  forgotPasswordCustomer
+);
+
+router.put(
+  '/customer/reset_password/:userID',
+  [body('newPassword').isString()],
+  validateRequest,
+  resetPasswordCustomer
 );
 
 module.exports = router;
