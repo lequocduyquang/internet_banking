@@ -47,7 +47,6 @@ const verifyCustomer = async (req, res, next) => {
 const payInCustomer = async (req, res, next) => {
   try {
     const { account_number: accountNumber, amount } = req.body;
-    console.log('Req body: ', req.body);
     const result = await employeeService.payInCustomer({ accountNumber, amount });
     if (result.error) {
       return next(createErrors(400, result.error.message));

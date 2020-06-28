@@ -22,6 +22,10 @@ const listFile = [
   'admin/createEmployee.js',
   'admin/deleteEmployee.js',
   'admin/getTransactions.js',
+  'employee/register.js',
+  'employee/login.js',
+  'employee/createCustomer.js',
+  'employee/verifyCustomer.js',
 ];
 
 module.exports = function (app) {

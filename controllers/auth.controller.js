@@ -71,6 +71,7 @@ const loginEmployee = async (req, res, next) => {
       return next(createErrors(400, result.error.message));
     }
     return res.status(200).send({
+      success: true,
       user: result.user,
       accessToken: result.accessToken,
       refreshToken: result.refreshToken,

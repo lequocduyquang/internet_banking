@@ -16,15 +16,16 @@ router.use(verifyEmployee);
 router.post(
   '/create-customer',
   [
-    body('username').isString().withMessage('Name must be valid'),
-    body('email').isEmail().withMessage('Email must be valid'),
+    body('username').isString().withMessage('Name must be valid').notEmpty(),
+    body('email').isEmail().withMessage('Email must be valid').notEmpty(),
     body('password')
       .trim()
       .isLength({ min: 4, max: 20 })
-      .withMessage('Password must be between 4 and 20 characters'),
-    body('fullname').isString().withMessage('Fullname must be valid'),
-    body('phone').isString().withMessage('Phone must be valid'),
-    body('address').isString().withMessage('Address must be valid'),
+      .withMessage('Password must be between 4 and 20 characters')
+      .notEmpty(),
+    body('fullname').isString().withMessage('Fullname must be valid').notEmpty(),
+    body('phone').isString().withMessage('Phone must be valid').notEmpty(),
+    body('address').isString().withMessage('Address must be valid').notEmpty(),
   ],
   validateRequest,
   createCustomer
