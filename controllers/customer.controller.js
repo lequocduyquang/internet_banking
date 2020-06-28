@@ -1,5 +1,6 @@
 const createErrors = require('http-errors');
 const customerService = require('../services/customer.service');
+const { redisClient } = require('../libs/redis');
 
 const getMyAccount = async (req, res, next) => {
   try {
@@ -134,11 +135,13 @@ const getAllDebits = async (req, res, next) => {
 const createDebit = async (req, res, next) => {
   try {
     // eslint-disable-next-line camelcase
-    const { reminder_id, amount, message } = req.body;
-    const io = req.app.get('io');
-    console.log('IO test: ', io);
-    io.emit('liveNotification', 'JTest');
-    const result = await customerService.createDebit(req.user, { reminder_id, amount, message });
+    const { reminder_id: id, amount, message } = req.body;
+    const { io } = req;
+    redisClient.hgetall('socketIds', (err, result) => {
+      console.log('Result: ', result[`Customer|${id}`]);
+      io.to(result[`Customer|${id}`]).emit('followNoti', 'Thông báo nhắc nợ');
+    });
+    const result = await customerService.createDebit(req.user, { id, amount, message });
     if (result.error) {
       return next(createErrors(400, result.error.message));
     }
