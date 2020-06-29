@@ -165,6 +165,7 @@ const loginCustomer = async ({ email, password }) => {
     }
     return await sendTokenResponse(customer);
   } catch (error) {
+    console.log('Error: ', error);
     return {
       error: new Error(ErrorCode.SOMETHING_WENT_WRONG),
     };

@@ -27,6 +27,11 @@ const listFile = [
   'employee/createCustomer.js',
   'employee/verifyCustomer.js',
   'employee/getTransactionLog.js',
+  'customer/register.js',
+  'customer/login.js',
+  'customer/getMyAccount.js',
+  'customer/createContact.js',
+  'customer/getListContact.js',
 ];
 
 module.exports = function (app) {
