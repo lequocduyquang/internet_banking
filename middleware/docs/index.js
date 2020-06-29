@@ -33,6 +33,7 @@ const listFile = [
   'customer/createContact.js',
   'customer/getListContact.js',
   'customer/deleteContact.js',
+  'customer/updatePassword.js',
 ];
 
 module.exports = function (app) {
