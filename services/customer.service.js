@@ -162,6 +162,7 @@ const verifyContact = async accountNumber => {
       where: {
         account_number: accountNumber,
       },
+      attributes: { exclude: ['password', 'account_balance'] },
     });
     if (!customer) {
       return {

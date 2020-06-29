@@ -10,7 +10,7 @@ module.exports = (sequelize, DataTypes) => {
         autoIncrement: true,
       },
       transaction_type: DataTypes.INTEGER, // "1: INTERNAL" || "2: PARTNER" || "3: DEBIT"
-      transaction_method: DataTypes.INTEGER, // 1: tru phi nguoi gui, 2: tru phi nguoi nhan
+      transfer_method: DataTypes.INTEGER, // 1: tru phi nguoi gui, 2: tru phi nguoi nhan
       is_actived: DataTypes.BOOLEAN,
       is_notified: DataTypes.BOOLEAN,
       sender_account_number: DataTypes.STRING,
@@ -18,6 +18,7 @@ module.exports = (sequelize, DataTypes) => {
       amount: DataTypes.DOUBLE,
       message: DataTypes.STRING,
       partner_code: DataTypes.STRING,
+      progress_status: DataTypes.INTEGER,
       updated_at: DataTypes.DATE,
       created_at: DataTypes.DATE,
     },

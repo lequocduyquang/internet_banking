@@ -46,7 +46,7 @@ app.get('/health', (req, res) => {
 
 app.use('/api/v1/auth', require('./routes/auth'));
 app.use('/api/v1/partner', require('./routes/partner'));
-app.use('/api/v1/transaction', require('./routes/transaction'));
+app.use('/api/v1/transfer', require('./routes/transfer'));
 app.use('/api/v1/employee', require('./routes/employee'));
 app.use('/api/v1/customer', require('./routes/customer'));
 app.use('/api/v1/admin', require('./routes/admin'));
