@@ -185,7 +185,7 @@ const updatePasswordCustomer = async (req, res, next) => {
 const forgotPasswordCustomer = async (req, res, next) => {
   try {
     const { email } = req.body;
-    const result = await authService.forgot(req, { email });
+    const result = await authService.sendEmailCustomer({ email });
     if (result.error) {
       return next(createErrors(400, result.error.message));
     }
@@ -197,11 +197,25 @@ const forgotPasswordCustomer = async (req, res, next) => {
   }
 };
 
-const resetPasswordCustomer = async (req, res, next) => {
-  const { userID } = req.params;
-  const { newPassword } = req.body;
+const verifyOTP = async (req, res, next) => {
   try {
-    const result = await authService.reset({ newPassword, userID });
+    const { OTP, email } = req.body;
+    const result = await authService.verifyOTP({ OTP, email });
+    if (result.error) {
+      return next(createErrors(400, result.error.message));
+    }
+    return res.status(200).send({
+      valid: result.isValid,
+    });
+  } catch (error) {
+    return next(createErrors(400, error.message));
+  }
+};
+
+const resetPasswordCustomer = async (req, res, next) => {
+  const { newPassword, email } = req.body;
+  try {
+    const result = await authService.reset({ newPassword, email });
     if (result.error) {
       return next(createErrors(400, result.error.message));
     }
@@ -226,4 +240,5 @@ module.exports = {
   updatePasswordCustomer,
   forgotPasswordCustomer,
   resetPasswordCustomer,
+  verifyOTP,
 };

@@ -13,7 +13,7 @@ const sendMail = async (email, message) => {
   const options = {
     from: process.env.FROM_EMAIL || 'jobfit.hcmus@gmail.com',
     to: email,
-    subject: 'Thong bao nhac no',
+    subject: 'Thong bao',
     html: message,
   };
   const info = await transporter.sendMail(options);

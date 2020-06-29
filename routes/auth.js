@@ -14,6 +14,7 @@ const {
   updatePasswordCustomer,
   forgotPasswordCustomer,
   resetPasswordCustomer,
+  verifyOTP,
 } = require('../controllers/auth.controller');
 const { requireAuth } = require('../middleware/auth');
 
@@ -119,10 +120,16 @@ router.post(
   validateRequest,
   forgotPasswordCustomer
 );
+router.post(
+  '/customer/verify/code',
+  [body('OTP').notEmpty(), body('email').isEmail().withMessage('Email must be valid')],
+  validateRequest,
+  verifyOTP
+);
 
 router.put(
-  '/customer/reset_password/:userID',
-  [body('newPassword').isString()],
+  '/customer/reset_password',
+  [body('newPassword').isString(), body('email').isEmail().withMessage('Email must be valid')],
   validateRequest,
   resetPasswordCustomer
 );

@@ -1,9 +1,11 @@
 const _ = require('lodash');
 const { Random } = require('random-js');
+const bcrypt = require('bcrypt');
 const models = require('../models');
 const { ErrorCode } = require('../constants/ErrorCode');
 const logger = require('../utils/logger');
 const { sendMail } = require('../utils/mailer');
+const { redisClient } = require('../libs/redis');
 
 const { Employee, Admin, Customer } = models;
 
@@ -256,7 +258,9 @@ const updatePassword = async ({ currentPassword, newPassword }, { email, id }) =
         error: new Error(ErrorCode.PASSWORD_NOT_MATCH),
       };
     }
-    customer.setDataValue('password', newPassword);
+    const salt = await bcrypt.genSalt(10);
+    const hashedNewPassword = await bcrypt.hash(newPassword, salt);
+    customer.setDataValue('password', hashedNewPassword);
     await customer.save();
     return await sendTokenResponse(customer);
   } catch (error) {
@@ -266,7 +270,7 @@ const updatePassword = async ({ currentPassword, newPassword }, { email, id }) =
   }
 };
 
-const sendEmailCustomer = async (req, { email }) => {
+const sendEmailCustomer = async ({ email }) => {
   const user = await Customer.findOne({
     where: { email: email },
   });
@@ -275,20 +279,39 @@ const sendEmailCustomer = async (req, { email }) => {
       error: new Error(ErrorCode.EMAIL_NOT_REGISTERED),
     };
   }
-  const resetPassUrl = `${req.protocol}://${req.get('host')}/api/v1/auth/customer/reset_password//${
-    user.id
-  }`;
-  const message = `<p>Please click to <i>${resetPassUrl}</i> to reset your password</p>`;
+  const OTPCode = new Random().integer(100000, 999999);
+  await redisClient.setAsync(`OTP:${email}`, OTPCode, 'EX', 60 * 60); // Expired 1h
+
+  const message = `
+    <p>Forgot your password</p>
+    <h4>
+      Input your OTP code to reset your password
+      <i>${OTPCode}</i>
+    </h4>
+  `;
 
   // eslint-disable-next-line no-return-await
   return await sendMail(user.email, message);
 };
 
-const reset = async ({ newPassword, userID }) => {
+const verifyOTP = async ({ OTP, email }) => {
+  try {
+    const otpCode = await redisClient.getAsync(`OTP:${email}`);
+    return {
+      isValid: otpCode === OTP,
+    };
+  } catch (error) {
+    return {
+      error: new Error(ErrorCode.SOMETHING_WENT_WRONG),
+    };
+  }
+};
+
+const reset = async ({ newPassword, email }) => {
   try {
     const customer = await Customer.findOne({
       where: {
-        id: userID,
+        email: email,
       },
     });
     await customer.resetPassword(newPassword);
@@ -315,4 +338,5 @@ module.exports = {
   updatePassword,
   sendEmailCustomer,
   reset,
+  verifyOTP,
 };
