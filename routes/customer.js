@@ -27,7 +27,7 @@ router.put(
 
 router.get('/list-contacts', getAllContacts);
 router.delete('/list-contacts/:account_number', deleteContact);
-router.get('/history', getHistory);
+router.get('/history/:account_number', getHistory);
 
 router.post(
   '/verify-contact',

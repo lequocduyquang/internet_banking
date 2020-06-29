@@ -1,4 +1,7 @@
 const createErrors = require('http-errors');
+const { Op } = require('sequelize');
+const { buildPaginationOpts, decoratePaginatedResult } = require('../utils/paginate');
+
 const customerService = require('../services/customer.service');
 const { redisClient } = require('../libs/redis');
 
@@ -84,33 +87,72 @@ const verifyContact = async (req, res, next) => {
 
 const getHistory = async (req, res, next) => {
   try {
+    const { account_number: accountNumber } = req.params;
+    console.log('account numbers: ', accountNumber);
+
+    const q = JSON.parse(req.query.q);
+    const { isReceiver, isSender, isRemind, isBeRemind } = q;
+
+    if (!accountNumber) {
+      return next(createErrors(400, 'Account number must be valid'));
+    }
+    const sort = {
+      sortBy: req.query.sortBy || 'created_at',
+      orderBy: req.query.orderBy || 'DESC',
+    };
+
     let condition = {};
-    if (req.query.isReceive) {
-      condition = { ...condition };
+    if (isReceiver) {
+      condition = { receiver_account_number: accountNumber };
     }
-    if (req.query.isSender) {
-      condition = { ...condition };
+
+    if (isSender) {
+      condition = { ...condition, sender_account_number: accountNumber };
     }
-    if (req.query.isBeRemind) {
-      condition = { ...condition, transaction_type: 3 };
-    }
-    if (req.query.isRemind) {
-      if (req.query.isBeRemind) {
-        condition = { ...condition, transaction_type: 3 };
-      }
-    }
-    if (req.query.all) {
+
+    if (isRemind && isBeRemind) {
       condition = {
         ...condition,
+        [Op.and]: {
+          [Op.or]: {
+            sender_account_number: accountNumber,
+            receiver_account_number: accountNumber,
+          },
+          transaction_type: 3,
+        },
       };
     }
-    const result = await customerService.getTransactionLogHistory(req.user, condition);
+
+    if (isRemind && !isBeRemind) {
+      condition = {
+        ...condition,
+        [Op.and]: { receiver_account_number: accountNumber, transaction_type: 3 },
+      };
+    }
+
+    if (isBeRemind && !isRemind) {
+      condition = {
+        ...condition,
+        [Op.and]: { sender_account_number: accountNumber, transaction_type: 3 },
+      };
+    }
+
+    if (!isReceiver && !isSender && !isBeRemind && !isRemind) {
+      condition = { receiver_account_number: accountNumber, sender_account_number: accountNumber };
+    }
+
+    const paginationOpts = buildPaginationOpts(req);
+
+    const result = await customerService.getTransactionLogHistory(
+      { [Op.or]: condition },
+      sort,
+      paginationOpts
+    );
     if (result.error) {
       return next(createErrors(400, result.error.message));
     }
-    return res.status(200).json({
-      success: true,
-      history: result.data,
+    return res.status(200).send({
+      ...decoratePaginatedResult(result.data, paginationOpts),
     });
   } catch (error) {
     return next(createErrors(400, error.message));

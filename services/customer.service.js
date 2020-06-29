@@ -139,28 +139,12 @@ const deleteContact = async (customer, account_number) => {
   }
 };
 
-const getTransactionLogHistory = async (customer, condition) => {
+const getTransactionLogHistory = async (condition, sort, paginationOpts = {}) => {
   try {
-    const account = await Customer.findOne({
-      where: {
-        id: customer.id,
-      },
-    });
-    if (_.isNil(account)) {
-      logger.info(`POSTGRES: ${ErrorCode.CUSTOMER_INFO_NOT_FOUND}`);
-      return {
-        error: new Error(ErrorCode.CUSTOMER_INFO_NOT_FOUND),
-      };
-    }
-    const history = await TransactionLog.findAll({
-      where: {
-        ...condition,
-        [Op.or]: {
-          sender_account_number: account.account_number,
-          receiver_account_number: account.account_number,
-        },
-      },
-      order: [['updated_at', 'DESC']],
+    const history = await TransactionLog.paginate({
+      where: condition,
+      order: [[`${sort.sortBy}`, `${sort.orderBy}`]],
+      ...paginationOpts,
     });
     return {
       data: history,

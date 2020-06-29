@@ -8,6 +8,8 @@
  *     description: Tạo 1 liên hệ
  *     produces:
  *       - application/json
+ *     security:
+ *       - Bearer: []
  *     parameters:
  *       - name: reminder_name
  *         type: string

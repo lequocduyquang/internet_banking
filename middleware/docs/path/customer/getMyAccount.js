@@ -8,6 +8,8 @@
  *     description: Tìm 1 tài khỏan customer
  *     produces:
  *       - application/json
+ *     security:
+ *       - Bearer: []
  *     responses:
  *      200:
  *          description: Kết quả

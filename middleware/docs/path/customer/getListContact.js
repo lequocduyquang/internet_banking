@@ -8,6 +8,8 @@
  *     description: Lấy danh sách liên hệ
  *     produces:
  *       - application/json
+ *     security:
+ *       - Bearer: []
  *     responses:
  *      200:
  *          description: Kết quả
