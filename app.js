@@ -50,6 +50,7 @@ app.use('/api/v1/transfer', require('./routes/transfer'));
 app.use('/api/v1/employee', require('./routes/employee'));
 app.use('/api/v1/customer', require('./routes/customer'));
 app.use('/api/v1/admin', require('./routes/admin'));
+app.use('/api/v1/debit', require('./routes/debit'));
 
 app.get('/test', (req, res) => {
   res.sendFile(`${__dirname}/index.html`);
