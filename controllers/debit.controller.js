@@ -29,7 +29,10 @@ const createDebit = async (req, res, next) => {
     const { io } = req;
     redisClient.hgetall('socketIds', (err, result) => {
       console.log('Create debit: ', result[`Customer|${id}`]);
-      io.to(result[`Customer|${id}`]).emit('debitNoti', `Thông báo nhắc nợ từ user ${username}`);
+      io.to(result[`Customer|${req.body.reminder_id}`]).emit(
+        'debitNoti',
+        `Thông báo nhắc nợ từ user ${username}`
+      );
     });
     const result = await debitService.create(id, req.body);
     return res.status(200).json({

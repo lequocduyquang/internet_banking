@@ -12,7 +12,7 @@ const {
 
 const router = express.Router();
 
-router.use(verifyEmployee);
+// router.use(verifyEmployee);
 
 router.post(
   '/create-customer',

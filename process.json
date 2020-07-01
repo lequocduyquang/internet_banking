@@ -1,0 +1,14 @@
+{
+  "apps": [
+    {
+      "name": "internet_banking_pm2",
+      "script": "./app.js",
+      "env": {
+        "PORT": 5000
+      },
+      "env_production": {
+        "PORT": 5500
+      }
+    }
+  ]
+}

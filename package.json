@@ -24,6 +24,7 @@
     "lint-staged": "^10.2.2",
     "nodemon": "^2.0.4",
     "path": "^0.12.7",
+    "pm2": "^4.4.0",
     "prettier": "^2.0.5",
     "sequelize-cli": "^5.5.1"
   },
