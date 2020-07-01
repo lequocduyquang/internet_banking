@@ -27,6 +27,7 @@ const create = async (id, data) => {
       reminder_id: reminder_id,
       amount: amount,
       message: message,
+      is_notified: true,
     });
     const cachedData = {
       creator_customer_id: id,
