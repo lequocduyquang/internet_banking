@@ -6,6 +6,7 @@ const {
   createDebit,
   deleteDebit,
   payDebit,
+  verifyContact,
 } = require('../controllers/debit.controller');
 
 const router = express.Router();
@@ -17,5 +18,12 @@ router.get('/', getAllDebits);
 router.post('/', createDebit);
 router.delete('/:id', deleteDebit);
 router.post('/pay', payDebit);
+
+router.post(
+  '/verify-contact',
+  [body('account_number').isString().withMessage('Account number must be valid')],
+  validateRequest,
+  verifyContact
+);
 
 module.exports = router;

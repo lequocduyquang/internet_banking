@@ -15,6 +15,29 @@ const { redisClient } = require('../libs/redis');
 const logger = require('../utils/logger');
 const { ErrorCode } = require('../constants/ErrorCode');
 
+const verifyContact = async accountNumber => {
+  try {
+    const customer = await Customer.findOne({
+      where: {
+        account_number: accountNumber,
+      },
+      attributes: { exclude: ['password', 'account_balance'] },
+    });
+    if (!customer) {
+      return {
+        error: new Error(ErrorCode.CUSTOMER_INFO_NOT_FOUND),
+      };
+    }
+    return {
+      data: customer,
+    };
+  } catch (error) {
+    return {
+      error: new Error(ErrorCode.SOMETHING_WENT_WRONG),
+    };
+  }
+};
+
 const create = async (id, data) => {
   try {
     if (!data) {
@@ -136,4 +159,5 @@ module.exports = {
   create,
   verifyOTP,
   paid,
+  verifyContact,
 };

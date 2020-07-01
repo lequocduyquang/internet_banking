@@ -89,9 +89,26 @@ const payDebit = async (req, res, next) => {
   }
 };
 
+const verifyContact = async (req, res, next) => {
+  try {
+    const { account_number: accountNumber } = req.body;
+    const result = await debitService.verifyContact(accountNumber);
+    if (result.error) {
+      return next(createErrors(400, result.error.message));
+    }
+    return res.status(200).json({
+      success: true,
+      customer: result.data,
+    });
+  } catch (error) {
+    return next(createErrors(400, error.message));
+  }
+};
+
 module.exports = {
   getAllDebits,
   createDebit,
   deleteDebit,
   payDebit,
+  verifyContact,
 };
