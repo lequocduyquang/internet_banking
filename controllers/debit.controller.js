@@ -74,8 +74,24 @@ const deleteDebit = async (req, res, next) => {
   }
 };
 
+const payDebit = async (req, res, next) => {
+  try {
+    const debitBody = req.body;
+    const customer = req.user;
+    const result = await debitService.paid({ customer, debitBody });
+    return res.status(200).send({
+      message: 'Paid debit',
+      paid_debit: result,
+    });
+  } catch (error) {
+    logger.error('Error: ', error);
+    return next(createErrors(400, error.message));
+  }
+};
+
 module.exports = {
   getAllDebits,
   createDebit,
   deleteDebit,
+  payDebit,
 };

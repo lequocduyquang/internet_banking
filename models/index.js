@@ -10,14 +10,16 @@ const db = {};
 
 let sequelize;
 if (config.url) {
+  console.log(123);
   sequelize = new Sequelize(config.url, config);
 } else {
+  console.log(456);
   sequelize = new Sequelize(config.database, config.username, config.password, {
     host: config.host,
     port: config.port,
     dialect: config.dialect,
     pool: {
-      max: 5,
+      max: 20,
       min: 0,
       idle: 10000,
       acquire: 20000,
