@@ -31,7 +31,7 @@ const createDebit = async (req, res, next) => {
       console.log('Create debit: ', result[`Customer|${id}`]);
       io.to(result[`Customer|${req.body.reminder_id}`]).emit(
         'debitNoti',
-        `Thông báo nhắc nợ từ user ${username}`
+        `Thông báo nhắc nợ từ user ${username}. Số tiền là: ${req.body.amount}`
       );
     });
     const result = await debitService.create(id, req.body);
@@ -79,15 +79,30 @@ const deleteDebit = async (req, res, next) => {
 
 const payDebit = async (req, res, next) => {
   try {
-    const debitBody = req.body;
+    const debitId = req.body;
     const customer = req.user;
-    const result = await debitService.paid({ customer, debitBody });
+    const result = await debitService.paid({ customer, debitId });
     return res.status(200).send({
       message: 'Paid debit',
-      paid_debit: result,
+      data: result,
     });
   } catch (error) {
     logger.error('Error: ', error);
+    return next(createErrors(400, error.message));
+  }
+};
+
+const verifyOTP = async (req, res, next) => {
+  try {
+    const { OTP } = req.body;
+    const result = await debitService.verifyOTP({ OTP });
+    if (result.error) {
+      return next(createErrors(400, result.error.message));
+    }
+    return res.status(200).send({
+      valid: result.isValid,
+    });
+  } catch (error) {
     return next(createErrors(400, error.message));
   }
 };
@@ -113,5 +128,6 @@ module.exports = {
   createDebit,
   deleteDebit,
   payDebit,
+  verifyOTP,
   verifyContact,
 };

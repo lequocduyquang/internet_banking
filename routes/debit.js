@@ -6,6 +6,7 @@ const {
   createDebit,
   deleteDebit,
   payDebit,
+  verifyOTP,
   verifyContact,
 } = require('../controllers/debit.controller');
 
@@ -16,8 +17,10 @@ router.use(requireAuth);
 
 router.get('/', getAllDebits);
 router.post('/', createDebit);
-router.delete('/:id', deleteDebit);
+router.put('/:id', deleteDebit);
 router.post('/pay', payDebit);
+
+router.post('/verify/code', [body('OTP').notEmpty()], validateRequest, verifyOTP);
 
 router.post(
   '/verify-contact',
