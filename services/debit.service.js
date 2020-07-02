@@ -143,7 +143,7 @@ const verifyOTP = async ({ OTP }) => {
         id: formatedData.debit_id,
       },
     });
-    debit.setDataValue('is_actived', 1);
+    debit.setDataValue('is_actived', 1); // Đã thanh toán
     await debit.save();
     return {
       debit,

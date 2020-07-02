@@ -81,10 +81,10 @@ const payDebit = async (req, res, next) => {
   try {
     const debitId = req.body;
     const customer = req.user;
-    const result = await debitService.paid({ customer, debitId });
+    const debitVal = await debitService.paid({ customer, debitId });
     return res.status(200).send({
       message: 'Paid debit',
-      data: result,
+      data: debitVal,
     });
   } catch (error) {
     logger.error('Error: ', error);
@@ -95,12 +95,22 @@ const payDebit = async (req, res, next) => {
 const verifyOTP = async (req, res, next) => {
   try {
     const { OTP } = req.body;
-    const result = await debitService.verifyOTP({ OTP });
-    if (result.error) {
-      return next(createErrors(400, result.error.message));
+    const { io } = req;
+
+    const paidDebit = await debitService.verifyOTP({ OTP });
+    if (paidDebit.error) {
+      return next(createErrors(400, paidDebit.error.message));
     }
+    /** Send thêm noti sau khi đã debit */
+    redisClient.hgetall('socketIds', (err, result) => {
+      console.log('Result: ', result[`Customer|${paidDebit.reminder_id}`]);
+      io.to(result[`Customer|${paidDebit.creator_customer_id}`]).emit(
+        'deletDebitNoti',
+        `Thông báo đã thanh toán nhắc nợ từ user ${req.user.username}`
+      );
+    });
     return res.status(200).send({
-      valid: result.isValid,
+      valid: paidDebit,
     });
   } catch (error) {
     return next(createErrors(400, error.message));
