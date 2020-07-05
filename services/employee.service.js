@@ -36,6 +36,7 @@ const createCustomer = async ({ username, email, password, fullname, phone, addr
       data: customer,
     };
   } catch (error) {
+    logger.error(`Create customer error: ${error.message}`);
     return {
       error: new Error(ErrorCode.SOMETHING_WENT_WRONG),
     };

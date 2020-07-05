@@ -15,6 +15,7 @@ const getAllEmployee = async (paginationOpts = {}) => {
       ...paginationOpts,
     });
     if (_.isNil(employees)) {
+      logger.info('Employees not found');
       return {
         error: new Error(ErrorCode.EMPLOYEES_NOT_FOUND),
       };
@@ -23,6 +24,7 @@ const getAllEmployee = async (paginationOpts = {}) => {
       employees,
     };
   } catch (error) {
+    logger.error(`${error.message}`);
     return {
       error: new Error(ErrorCode.SOMETHING_WENT_WRONG),
     };
@@ -40,6 +42,7 @@ const getEmployee = async (id, paginationOpts = {}) => {
       ...paginationOpts,
     });
     if (_.isNil(employee)) {
+      logger.info('Employee info not found');
       return {
         error: new Error(ErrorCode.EMPLOYEE_INFO_NOT_FOUND),
       };
@@ -48,6 +51,7 @@ const getEmployee = async (id, paginationOpts = {}) => {
       employee,
     };
   } catch (error) {
+    logger.error(`${error.message}`);
     return {
       error: new Error(ErrorCode.SOMETHING_WENT_WRONG),
     };
@@ -72,6 +76,7 @@ const createEmployee = async ({ username, email, password }) => {
       data: employee,
     };
   } catch (error) {
+    logger.error(`${error.message}`);
     return {
       error: new Error(ErrorCode.SOMETHING_WENT_WRONG),
     };
@@ -97,6 +102,7 @@ const deleteEmployee = async id => {
       data: employee,
     };
   } catch (error) {
+    logger.error(`${error.message}`);
     return {
       error: new Error(ErrorCode.SOMETHING_WENT_WRONG),
     };
@@ -124,6 +130,7 @@ const getAllTransaction = async (query, sort, paginationOpts = {}) => {
       sum: sumAmount,
     };
   } catch (error) {
+    logger.error(`${error.message}`);
     return {
       error: new Error(ErrorCode.SOMETHING_WENT_WRONG),
     };

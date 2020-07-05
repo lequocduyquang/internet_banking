@@ -36,6 +36,7 @@ const registerEmployee = async ({ username, email, password }) => {
       data: employee,
     };
   } catch (error) {
+    logger.error(`Register employee error: ${error.message}`);
     return {
       error: new Error(ErrorCode.SOMETHING_WENT_WRONG),
     };
@@ -58,6 +59,7 @@ const registerAdmin = async ({ username, email, password }) => {
       data: admin,
     };
   } catch (error) {
+    logger.error(`Register admin error: ${error.message}`);
     return {
       error: new Error(ErrorCode.SOMETHING_WENT_WRONG),
     };
@@ -89,6 +91,7 @@ const registerCustomer = async ({ username, email, password, phone, fullname }) 
       data: customer,
     };
   } catch (error) {
+    logger.error(`Register customer error: ${error.message}`);
     return {
       error: new Error(ErrorCode.SOMETHING_WENT_WRONG),
     };
@@ -115,6 +118,7 @@ const loginEmployee = async ({ email, password }) => {
     }
     return await sendTokenResponse(employee);
   } catch (error) {
+    logger.error(`Login employee error: ${error.message}`);
     return {
       error: new Error(ErrorCode.SOMETHING_WENT_WRONG),
     };
@@ -141,6 +145,7 @@ const loginAdmin = async ({ email, password }) => {
     }
     return await sendTokenResponse(admin);
   } catch (error) {
+    logger.error(`Login admin error: ${error.message}`);
     return {
       error: new Error(ErrorCode.SOMETHING_WENT_WRONG),
     };
@@ -167,7 +172,7 @@ const loginCustomer = async ({ email, password }) => {
     }
     return await sendTokenResponse(customer);
   } catch (error) {
-    console.log('Error: ', error);
+    logger.error(`Login customer error: ${error.message}`);
     return {
       error: new Error(ErrorCode.SOMETHING_WENT_WRONG),
     };
@@ -190,6 +195,7 @@ const getEmployeeProfile = async email => {
       data: employee,
     };
   } catch (error) {
+    logger.error(`Get employee profile error: ${error.message}`);
     return {
       error: new Error(ErrorCode.SOMETHING_WENT_WRONG),
     };
@@ -212,6 +218,7 @@ const getAdminProfile = async email => {
       data: admin,
     };
   } catch (error) {
+    logger.error(`Get admin profile error: ${error.message}`);
     return {
       error: new Error(ErrorCode.SOMETHING_WENT_WRONG),
     };
@@ -234,6 +241,7 @@ const getCustomerProfile = async email => {
       data: customer,
     };
   } catch (error) {
+    logger.error(`Get customer profile error: ${error.message}`);
     return {
       error: new Error(ErrorCode.SOMETHING_WENT_WRONG),
     };
@@ -264,6 +272,7 @@ const updatePassword = async ({ currentPassword, newPassword }, { email, id }) =
     await customer.save();
     return await sendTokenResponse(customer);
   } catch (error) {
+    logger.error(`Update password error: ${error.message}`);
     return {
       error: new Error(ErrorCode.SOMETHING_WENT_WRONG),
     };

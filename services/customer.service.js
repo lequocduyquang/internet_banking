@@ -32,6 +32,7 @@ const getAccount = async customer => {
       data: account,
     };
   } catch (error) {
+    logger.error(`Get account error: ${error.message}`);
     return {
       error: new Error(ErrorCode.SOMETHING_WENT_WRONG),
     };
@@ -50,6 +51,7 @@ const getListContacts = async customer => {
       data: listContacts,
     };
   } catch (error) {
+    logger.error(`Get list contacts: ${error.message}`);
     return {
       error: new Error(ErrorCode.SOMETHING_WENT_WRONG),
     };
@@ -99,6 +101,7 @@ const createContact = async (customer, { reminder_name: name, account_number: nu
       error: new Error('Account contact is not valid'),
     };
   } catch (error) {
+    logger.error(`Create contact error: ${error.message}`);
     return {
       error: new Error(ErrorCode.SOMETHING_WENT_WRONG),
     };
@@ -133,6 +136,7 @@ const deleteContact = async (customer, account_number) => {
       error: new Error('Account contact is not valid'),
     };
   } catch (error) {
+    logger.error(`Delete contact error: ${error.message}`);
     return {
       error: new Error(ErrorCode.SOMETHING_WENT_WRONG),
     };
@@ -150,6 +154,7 @@ const getTransactionLogHistory = async (condition, sort, paginationOpts = {}) =>
       data: history,
     };
   } catch (error) {
+    logger.error(`Get transaction log error: ${error.message}`);
     return {
       error: new Error(ErrorCode.SOMETHING_WENT_WRONG),
     };
