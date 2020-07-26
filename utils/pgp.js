@@ -1,5 +1,5 @@
 const openpgp = require('openpgp');
-const { pgp } = require('../config/config');
+const { pgp } = require('../config');
 
 const generateNewPrivateKey = async () => {
   const {

@@ -1,26 +1,26 @@
-require('dotenv').config();
+/* eslint-disable import/no-dynamic-require */
+/* eslint global-require: 0 */
 
-module.exports = {
-  development: {
-    database: process.env.PSQL_DATABASE,
-    username: process.env.PSQL_USERNAME,
-    password: process.env.PSQL_PASSWORD,
-    host: process.env.PSQL_HOST,
-    port: process.env.PSQL_PORT,
-    dialect: process.env.PSQL_DIALECT,
-  },
-  test: {
-    url: process.env.TEST_DATABASE_URL || 'postgres://postgres:postgres@localhost:5433/test_db',
-    dialect: 'postgres',
-  },
-  production: {
-    url: process.env.DATABASE_URL,
+const envFound = require('dotenv').config();
+
+if (envFound.error) {
+  throw new Error("⚠️  Couldn't find .env file  ⚠️");
+}
+
+const defaultConfig = {
+  port: process.env.PORT || 5000,
+  postgresSQL: {
+    host: process.env.PSQL_HOST || 'rajje.db.elephantsql.com',
+    port: process.env.PSQL_PORT || 5432,
+    database: process.env.PSQL_DATABASE || 'ebwxatal',
+    username: process.env.PSQL_USERNAME || 'ebwxatal',
+    password: process.env.PSQL_PASSWORD || 'J9EIw1wZd9_FvMtLrIlvtN2pUWtqq4bE',
     dialect: 'postgres',
   },
   redis: {
-    port: process.env.REDIS_PORT,
-    host: process.env.REDIS_HOST,
-    password: process.env.REDIS_PASSWORD,
+    host: process.env.REDIS_HOST || 'redis-12222.c10.us-east-1-3.ec2.cloud.redislabs.com',
+    port: process.env.REDIS_PORT || 12222,
+    password: process.env.REDIS_PASSWORD || 'jobfit2020',
   },
   pgp: {
     PRIVATE_KEY: `-----BEGIN PGP PRIVATE KEY BLOCK-----
@@ -122,3 +122,10 @@ ow==
     fee: 1000,
   },
 };
+
+const getConfig = env => {
+  const envConfig = require(`./${env}`);
+  return Object.assign(defaultConfig, envConfig);
+};
+
+module.exports = getConfig(process.env.NODE_ENV);
