@@ -1,30 +1,26 @@
 /* eslint-disable camelcase */
-const { BadRequestError } = require('@sgjobfit/common');
+const createErrors = require('http-errors');
 const { decrypt } = require('../utils/pgp');
-const models = require('../models/customer.model');
+const partnerService = require('../services/partner.service');
 
 const getAccountProfile = async (req, res, next) => {
   try {
     const { message } = req.headers;
     if (!message) {
-      throw new BadRequestError('Message is not found');
+      return next(createErrors(400, 'Message is not found'));
     }
     const accountNumber = decrypt(message);
-    const accountProfile = await models.Customer.findOne({
-      where: {
-        account_number: accountNumber,
-      },
-    });
+    const accountProfile = await partnerService.getProfile(accountNumber);
     if (!accountNumber) {
-      res.status(404).send({
+      return res.status(404).send({
         message: 'Account profile not found',
       });
     }
-    res.status(200).send({
+    return res.status(200).send({
       account_profile: accountProfile,
     });
   } catch (error) {
-    next(new BadRequestError(error.message));
+    return next(createErrors(400, error.message));
   }
 };
 
