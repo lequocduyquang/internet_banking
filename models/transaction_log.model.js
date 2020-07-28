@@ -11,8 +11,8 @@ module.exports = (sequelize, DataTypes) => {
       },
       transaction_type: DataTypes.INTEGER, // "1: INTERNAL" || "2: PARTNER" || "3: DEBIT"
       transfer_method: DataTypes.INTEGER, // 1: tru phi nguoi gui, 2: tru phi nguoi nhan
-      is_actived: DataTypes.BOOLEAN,
-      is_notified: DataTypes.BOOLEAN,
+      is_actived: DataTypes.INTEGER,
+      is_notified: DataTypes.INTEGER,
       sender_account_number: DataTypes.STRING,
       receiver_account_number: DataTypes.STRING,
       amount: DataTypes.DOUBLE,

@@ -5,6 +5,7 @@ const {
   getMyAccount,
   createContact,
   getAllContacts,
+  updateContact,
   deleteContact,
   getHistory,
   verifyContact,
@@ -18,7 +19,7 @@ const { requireAuth } = require('../middleware/auth');
 router.use(requireAuth);
 
 router.get('/my-account', getMyAccount);
-router.put(
+router.post(
   '/create-contact',
   [body('reminder_name').isString(), body('account_number').isString()],
   validateRequest,
@@ -26,6 +27,7 @@ router.put(
 );
 
 router.get('/list-contacts', getAllContacts);
+router.put('/list-contacts/:account_number', updateContact);
 router.delete('/list-contacts/:account_number', deleteContact);
 router.get('/history/:account_number', getHistory);
 

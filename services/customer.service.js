@@ -108,6 +108,39 @@ const createContact = async (customer, { reminder_name: name, account_number: nu
   }
 };
 
+const updateContact = async (customer, account_number, reminder_name) => {
+  try {
+    const account = await Customer.findOne({
+      where: {
+        id: customer.id,
+      },
+    });
+    if (_.isNil(account)) {
+      logger.info(`POSTGRES: ${ErrorCode.CUSTOMER_INFO_NOT_FOUND}`);
+      return {
+        error: new Error(ErrorCode.CUSTOMER_INFO_NOT_FOUND),
+      };
+    }
+    // eslint-disable-next-line array-callback-return
+    const newListContacts = account.list_contact.map(item => {
+      if (item.account_number === account_number) {
+        // eslint-disable-next-line no-param-reassign
+        item.reminder_name = reminder_name;
+      }
+    });
+    account.setDataValue('list_contact', newListContacts);
+    await account.save();
+    return {
+      error: new Error('Account contact is not valid'),
+    };
+  } catch (error) {
+    logger.error(`Delete contact error: ${error.message}`);
+    return {
+      error: new Error(ErrorCode.SOMETHING_WENT_WRONG),
+    };
+  }
+};
+
 const deleteContact = async (customer, account_number) => {
   try {
     const account = await Customer.findOne({
@@ -245,6 +278,7 @@ module.exports = {
   getAccount,
   getListContacts,
   createContact,
+  updateContact,
   deleteContact,
   getTransactionLogHistory,
   verifyContact,

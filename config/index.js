@@ -10,11 +10,11 @@ if (envFound.error) {
 const defaultConfig = {
   port: process.env.PORT || 5000,
   postgresSQL: {
-    host: process.env.PSQL_HOST || 'rajje.db.elephantsql.com',
+    host: process.env.PSQL_HOST || 'internet-banking.cgz7dwdib785.us-east-2.rds.amazonaws.com',
     port: process.env.PSQL_PORT || 5432,
-    database: process.env.PSQL_DATABASE || 'ebwxatal',
-    username: process.env.PSQL_USERNAME || 'ebwxatal',
-    password: process.env.PSQL_PASSWORD || 'J9EIw1wZd9_FvMtLrIlvtN2pUWtqq4bE',
+    database: process.env.PSQL_DATABASE || 'postgres',
+    username: process.env.PSQL_USERNAME || 'postgres',
+    password: process.env.PSQL_PASSWORD || 'Duyquang!2006',
     dialect: 'postgres',
   },
   redis: {

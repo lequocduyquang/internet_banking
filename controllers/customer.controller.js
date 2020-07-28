@@ -1,3 +1,4 @@
+/* eslint-disable camelcase */
 const createErrors = require('http-errors');
 const { Op } = require('sequelize');
 const { buildPaginationOpts, decoratePaginatedResult } = require('../utils/paginate');
@@ -40,6 +41,23 @@ const createContact = async (req, res, next) => {
     // eslint-disable-next-line camelcase
     const { reminder_name, account_number } = req.body;
     const result = await customerService.createContact(req.user, { reminder_name, account_number });
+    if (result.error) {
+      return next(createErrors(400, result.error.message));
+    }
+    return res.status(200).json({
+      success: true,
+      contact: result.data,
+    });
+  } catch (error) {
+    return next(createErrors(400, error.message));
+  }
+};
+
+const updateContact = async (req, res, next) => {
+  try {
+    const { account_number } = req.params;
+    const { reminder_name } = req.body;
+    const result = await customerService.updateContact(req.user, account_number, reminder_name);
     if (result.error) {
       return next(createErrors(400, result.error.message));
     }
@@ -202,6 +220,7 @@ module.exports = {
   getMyAccount,
   createContact,
   getAllContacts,
+  updateContact,
   deleteContact,
   verifyContact,
   getHistory,
