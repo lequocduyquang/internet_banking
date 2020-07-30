@@ -37,7 +37,7 @@ router.post(
   validateRequest,
   verifyContact
 );
-router.get('/debits', getAllDebits);
-router.post('/debit', createDebit);
+// router.get('/debits', getAllDebits);
+// router.post('/debit', createDebit);
 
 module.exports = router;

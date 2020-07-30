@@ -26,6 +26,7 @@ const handleTransaction = async transactionData => {
       transfer_method: transferMethod, // 1: tru phi nguoi gui, 2: tru phi nguoi nhan
       partner_code: partnerCode,
     } = transactionData;
+    console.log('Transaction data ');
     // Check người nhận có nằm trong list contact hay không ?
     /**
      * Hiện tại đang đi query luôn db chứ ko check field list_contacts
@@ -62,11 +63,10 @@ const handleTransaction = async transactionData => {
         error: new Error('Account sender is not valid'),
       };
     }
+    console.log('Sender', sender.list_contact);
     let receiver;
     if (
-      _.isNil(
-        sender.list_contacts.find(contact => contact.account_number === receiverAccountNumber)
-      )
+      _.isNil(sender.list_contact.find(contact => contact.account_number === receiverAccountNumber))
     ) {
       receiver = await Customer.findOne({
         where: {
@@ -83,23 +83,24 @@ const handleTransaction = async transactionData => {
 
     // 2: Tạo 1 transaction log -> progress status = 0 (Chua thuc hien)
     const transactionLog = await TransactionLog.create({
-      transaction_type: transactionType,
+      transaction_type: transactionType || 1,
       transfer_method: transferMethod,
-      is_actived: true,
-      is_notified: false,
+      is_actived: 1,
+      is_notified: 0,
       sender_account_number: senderAccountNumber,
       receiver_account_number: receiverAccountNumber,
       amount,
       message,
       partner_code: partnerCode || '',
+      progress_status: 0,
     });
 
     // 3. Tạo ra 1 mã OTP 6 số -> store vào redis với expired_time = 30 phút
     const OTPCode = new Random().integer(100000, 999999);
     const cachedData = {
       id: transactionLog.id,
-      transaction_type: transactionType,
-      transfer_method: transferMethod,
+      transaction_type: transactionType || 1,
+      transfer_method: transferMethod || 1,
       sender_account_number: senderAccountNumber,
       receiver_account_number: receiverAccountNumber,
       amount,
@@ -115,7 +116,7 @@ const handleTransaction = async transactionData => {
     `;
     return await sendMail(sender.email, emailContent);
   } catch (err) {
-    logger.error(err);
+    logger.error(`Error when create transfer internal: ${err}`);
     return {
       error: new Error(ErrorCode.SOMETHING_WENT_WRONG),
     };
@@ -198,7 +199,7 @@ const verifyOTP = async ({ OTP }) => {
   try {
     const data = await redisClient.getAsync(`Transfer:${OTP}`);
     const formatedData = JSON.parse(data);
-    const [sender, receiver] = Promise.all([
+    const [sender, receiver] = await Promise.all([
       Customer.findOne({
         where: {
           account_number: formatedData.sender_account_number,
@@ -214,6 +215,8 @@ const verifyOTP = async ({ OTP }) => {
     const transferMethod = formatedData.transfer_method;
     const { amount, id } = formatedData;
     const fee = 1000;
+
+    console.log('Transaction type and transaction method: ', transactionType, transferMethod);
 
     if (transactionType === 1) {
       if (transferMethod === 1) {
@@ -243,6 +246,7 @@ const verifyOTP = async ({ OTP }) => {
       transaction_log: transactionLog,
     };
   } catch (error) {
+    console.log('Error when verify code: ', error);
     return {
       error: new Error(ErrorCode.SOMETHING_WENT_WRONG),
     };
