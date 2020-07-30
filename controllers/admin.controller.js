@@ -67,6 +67,22 @@ const deleteEmployee = async (req, res, next) => {
   }
 };
 
+const unblockEmployee = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const result = await adminService.unBlockEmployee(id);
+    if (result.error) {
+      return next(createErrors(400, result.error.message));
+    }
+    return res.status(200).json({
+      message: 'Unblock successfullly',
+      employee: result.data,
+    });
+  } catch (error) {
+    return next(createErrors(400, error.message));
+  }
+};
+
 const getAllTransaction = async (req, res, next) => {
   try {
     const { begin, end, partner } = req.query;
@@ -120,5 +136,6 @@ module.exports = {
   getEmployee,
   createEmployee,
   deleteEmployee,
+  unblockEmployee,
   getAllTransaction,
 };

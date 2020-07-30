@@ -12,12 +12,12 @@ const {
 
 const router = express.Router();
 
-// router.use(verifyEmployee);
+router.use(verifyEmployee);
 
 router.post(
   '/create-customer',
   [
-    body('username').isString().withMessage('Name must be valid').notEmpty(),
+    body('username').isString().withMessage('Username must be valid').notEmpty(),
     body('email').isEmail().withMessage('Email must be valid').notEmpty(),
     body('password')
       .trim()
@@ -38,12 +38,7 @@ router.post(
   validateRequest,
   verifyCustomer
 );
-router.post(
-  '/payin',
-  [body('account_number').isString(), body('amount').isDecimal()],
-  validateRequest,
-  payInCustomer
-);
+router.post('/payin', [body('account_number').isString()], validateRequest, payInCustomer);
 
 router.get('/history/:account_number', getTransactionLog);
 router.get('/history/test/:account_number', getTransactionLogV2);

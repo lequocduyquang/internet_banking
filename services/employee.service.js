@@ -63,7 +63,8 @@ const payInCustomer = async ({ accountNumber, amount }) => {
       sender_account_number: 'GDV',
       receiver_account_number: accountNumber,
       amount,
-      message: `${customer.fullname} nộp ${amount}vnd vào tài khoản`,
+      is_actived: 1,
+      message: `${customer.fullname} nộp ${amount} VND vào tài khoản`,
     });
     return {
       data: {
@@ -72,6 +73,7 @@ const payInCustomer = async ({ accountNumber, amount }) => {
       },
     };
   } catch (error) {
+    logger.info(`Error when pay in customer account ${error.message}`);
     return {
       error: new Error(ErrorCode.SOMETHING_WENT_WRONG),
     };

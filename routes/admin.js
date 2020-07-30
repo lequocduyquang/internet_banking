@@ -6,6 +6,7 @@ const {
   getEmployee,
   createEmployee,
   deleteEmployee,
+  unblockEmployee,
   getAllTransaction,
 } = require('../controllers/admin.controller');
 
@@ -32,7 +33,7 @@ router.post(
   createEmployee
 );
 router.delete('/employees/:id', deleteEmployee);
-
+router.put('/employees/unblock/:id', unblockEmployee);
 /** TRANSACTION  */
 router.get('/transactions', getAllTransaction);
 

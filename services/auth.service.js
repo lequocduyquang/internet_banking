@@ -103,6 +103,7 @@ const loginEmployee = async ({ email, password }) => {
     const employee = await Employee.findOne({
       where: {
         email: email,
+        status: 1,
       },
     });
     if (!employee) {
@@ -157,6 +158,7 @@ const loginCustomer = async ({ email, password }) => {
     const customer = await Customer.findOne({
       where: {
         email: email,
+        status: 1,
       },
     });
     if (!customer) {

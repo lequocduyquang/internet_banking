@@ -72,7 +72,7 @@ const loginEmployee = async (req, res, next) => {
     }
     return res.status(200).send({
       success: true,
-      user: result.user,
+      employee: result.user,
       accessToken: result.accessToken,
       refreshToken: result.refreshToken,
     });
@@ -90,7 +90,7 @@ const loginAdmin = async (req, res, next) => {
     }
     return res.status(200).send({
       success: true,
-      user: result.user,
+      admin: result.user,
       accessToken: result.accessToken,
       refreshToken: result.refreshToken,
     });
@@ -107,7 +107,8 @@ const loginCustomer = async (req, res, next) => {
       return next(createErrors(400, result.error.message));
     }
     return res.status(200).send({
-      user: result.user,
+      success: true,
+      customer: result.user,
       accessToken: result.accessToken,
       refreshToken: result.refreshToken,
     });

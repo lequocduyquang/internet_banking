@@ -109,6 +109,32 @@ const deleteEmployee = async id => {
   }
 };
 
+const unBlockEmployee = async id => {
+  try {
+    const employee = await Employee.findOne({
+      where: {
+        id: id,
+      },
+      attributes: { exclude: ['password'] },
+    });
+    if (_.isNil(employee)) {
+      return {
+        error: new Error(ErrorCode.EMPLOYEE_INFO_NOT_FOUND),
+      };
+    }
+    employee.setDataValue('status', 1);
+    await employee.save();
+    return {
+      data: employee,
+    };
+  } catch (error) {
+    logger.error(`${error.message}`);
+    return {
+      error: new Error(ErrorCode.SOMETHING_WENT_WRONG),
+    };
+  }
+};
+
 const getAllTransaction = async (query, sort, paginationOpts = {}) => {
   try {
     const transactions = await TransactionLog.paginate({
@@ -142,5 +168,6 @@ module.exports = {
   getEmployee,
   createEmployee,
   deleteEmployee,
+  unBlockEmployee,
   getAllTransaction,
 };

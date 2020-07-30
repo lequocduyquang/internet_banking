@@ -87,7 +87,7 @@ CREATE TABLE "transaction_type" (
 
 ALTER TABLE "transaction_log" ADD FOREIGN KEY ("transaction_type") REFERENCES "transaction_type" ("id");
 
-ALTER TABLE "transaction_log" ADD FOREIGN KEY ("parner_code") REFERENCES "partner" ("code");
+ALTER TABLE "transaction_log" ADD FOREIGN KEY ("partner_code") REFERENCES "partner" ("code");
 
 ALTER TABLE "debit" ADD FOREIGN KEY ("creator_customer_id") REFERENCES "customer" ("id");
 
