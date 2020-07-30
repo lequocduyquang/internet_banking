@@ -5,6 +5,8 @@ const { validateRequest } = require('../utils/validate');
 const router = express.Router();
 
 const {
+  verifyInternalAccount,
+  verifyPartnerAccount,
   transactionPartner,
   transferInternal,
   verifyOTP,
@@ -14,13 +16,27 @@ const { requireAuth } = require('../middleware/auth');
 router.use(requireAuth);
 
 router.post(
-  '/partner',
+  '/internal/verify',
+  [body('receiver_account_number').isString()],
+  validateRequest,
+  verifyInternalAccount
+);
+
+// router.post(
+//   '/partner/verify',
+//   [body('receiver_account_number').isString()],
+//   validateRequest,
+//   verifyPartnerAccount
+// );
+
+router.post(
+  '/partner/create',
   [body('message').isString(), body('privateKey').isString()],
   validateRequest,
   transactionPartner
 );
 router.post(
-  '/internal',
+  '/internal/create',
   [
     body('sender_account_number').isString(),
     body('receiver_account_number').isString(),

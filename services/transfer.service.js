@@ -9,6 +9,41 @@ const { sendMail } = require('../utils/mailer');
 const { Customer, TransactionLog } = models;
 const { redisClient } = require('../libs/redis');
 
+const verifyInternalAccount = async ({ sender, receiver }) => {
+  try {
+    const foundSender = await Customer.findOne({
+      where: {
+        id: sender.id,
+      },
+    });
+    if (!foundSender) {
+      logger.info('Account sender is not valid');
+      return {
+        error: new Error('Account sender is not valid'),
+      };
+    }
+    const foundContactList = foundSender.list_contact.find(
+      item => item.account_number === receiver
+    );
+    if (foundContactList) {
+      console.log('Get from contact list');
+      return foundContactList;
+    }
+    const foundReceiver = await Customer.findOne({
+      where: {
+        account_number: receiver,
+      },
+      attributes: ['username', 'account_number'],
+    });
+    return foundReceiver;
+  } catch (error) {
+    logger.error(`Error when verify transfer internal: ${error}`);
+    return {
+      error: new Error(ErrorCode.SOMETHING_WENT_WRONG),
+    };
+  }
+};
+
 const handleTransaction = async transactionData => {
   try {
     if (!transactionData) {
@@ -26,7 +61,6 @@ const handleTransaction = async transactionData => {
       transfer_method: transferMethod, // 1: tru phi nguoi gui, 2: tru phi nguoi nhan
       partner_code: partnerCode,
     } = transactionData;
-    console.log('Transaction data ');
     // Check người nhận có nằm trong list contact hay không ?
     /**
      * Hiện tại đang đi query luôn db chứ ko check field list_contacts
@@ -63,23 +97,27 @@ const handleTransaction = async transactionData => {
         error: new Error('Account sender is not valid'),
       };
     }
-    console.log('Sender', sender.list_contact);
-    let receiver;
-    if (
-      _.isNil(sender.list_contact.find(contact => contact.account_number === receiverAccountNumber))
-    ) {
-      receiver = await Customer.findOne({
-        where: {
-          account_number: receiverAccountNumber,
-        },
-      });
-      if (!receiver) {
-        logger.info('Account receiver is not valid');
-        return {
-          error: new Error('Account receiver is not valid'),
-        };
-      }
+    if (sender.account_balance <= 0) {
+      logger.info('Account balance must be > 0');
+      return {};
     }
+    // console.log('Sender', sender.list_contact);
+    // let receiver;
+    // if (
+    //   _.isNil(sender.list_contact.find(contact => contact.account_number === receiverAccountNumber))
+    // ) {
+    //   receiver = await Customer.findOne({
+    //     where: {
+    //       account_number: receiverAccountNumber,
+    //     },
+    //   });
+    //   if (!receiver) {
+    //     logger.info('Account receiver is not valid');
+    //     return {
+    //       error: new Error('Account receiver is not valid'),
+    //     };
+    //   }
+    // }
 
     // 2: Tạo 1 transaction log -> progress status = 0 (Chua thuc hien)
     const transactionLog = await TransactionLog.create({
@@ -254,6 +292,7 @@ const verifyOTP = async ({ OTP }) => {
 };
 
 module.exports = {
+  verifyInternalAccount,
   handleTransaction,
   handleTransactionPartner,
   verifyOTP,

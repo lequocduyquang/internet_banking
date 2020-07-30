@@ -5,6 +5,22 @@ const transferService = require('../services/transfer.service');
 
 const { decrypt } = require('../utils/pgp');
 
+const verifyInternalAccount = async (req, res, next) => {
+  try {
+    const result = await transferService.verifyInternalAccount({
+      sender: req.user,
+      receiver: req.body.receiver_account_number,
+    });
+    res.status(200).json({
+      message: 'Success',
+      data: result,
+    });
+  } catch (error) {
+    logger.error(`Verify internal error ${error}`);
+    return next(createErrors(400, error.message));
+  }
+};
+
 const transferInternal = async (req, res, next) => {
   try {
     const result = await transferService.handleTransaction(req.body);
@@ -51,6 +67,7 @@ const verifyOTP = async (req, res, next) => {
 };
 
 module.exports = {
+  verifyInternalAccount,
   transactionPartner,
   transferInternal,
   verifyOTP,

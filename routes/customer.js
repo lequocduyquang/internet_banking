@@ -9,8 +9,6 @@ const {
   deleteContact,
   getHistory,
   verifyContact,
-  getAllDebits,
-  createDebit,
 } = require('../controllers/customer.controller');
 
 const router = express.Router();
