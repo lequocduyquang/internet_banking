@@ -25,7 +25,7 @@ const requireAuth = async (req, res, next) => {
   }
 };
 
-const authorize = async (req, res, next) => {
+const authorizeAdmin = async (req, res, next) => {
   const email = req.user.email;
   const admin = await models.Admin.findOne({
     where: {
@@ -96,7 +96,7 @@ const verifyEmployee = async (req, res, next) => {
 
 module.exports = {
   requireAuth,
-  authorize,
+  authorizeAdmin,
   verifyPartner,
   verifyEmployee,
 };

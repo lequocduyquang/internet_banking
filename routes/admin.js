@@ -11,10 +11,10 @@ const {
 } = require('../controllers/admin.controller');
 
 const router = express.Router();
-const { requireAuth, authorize } = require('../middleware/auth');
+const { requireAuth, authorizeAdmin } = require('../middleware/auth');
 
 router.use(requireAuth);
-router.use(authorize);
+router.use(authorizeAdmin);
 
 /** EMPLOYEE */
 router.get('/employees', getAllEmployee);
@@ -34,6 +34,7 @@ router.post(
 );
 router.delete('/employees/:id', deleteEmployee);
 router.put('/employees/unblock/:id', unblockEmployee);
+
 /** TRANSACTION  */
 router.get('/transactions', getAllTransaction);
 

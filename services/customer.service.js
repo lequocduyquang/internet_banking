@@ -88,7 +88,7 @@ const createContact = async (customer, { reminder_name: name, account_number: nu
         };
       }
       account.list_contact.push({
-        reminder_name: name,
+        reminder_name: name || isValidAccount.username,
         account_number: number,
       });
       account.setDataValue('list_contact', account.list_contact);
@@ -122,19 +122,18 @@ const updateContact = async (customer, account_number, reminder_name) => {
       };
     }
     // eslint-disable-next-line array-callback-return
-    const newListContacts = account.list_contact.map(item => {
-      if (item.account_number === account_number) {
-        // eslint-disable-next-line no-param-reassign
-        item.reminder_name = reminder_name;
-      }
-    });
-    account.setDataValue('list_contact', newListContacts);
+    const foundIndex = account.list_contact.findIndex(
+      contact => contact.account_number === account_number
+    );
+    account.list_contact[foundIndex].reminder_name = reminder_name;
+    console.log('New Contacts list: ', account.list_contact);
+    account.setDataValue('list_contact', account.list_contact);
     await account.save();
     return {
-      error: new Error('Account contact is not valid'),
+      data: account,
     };
   } catch (error) {
-    logger.error(`Delete contact error: ${error.message}`);
+    logger.error(`Update contact error: ${error.message}`);
     return {
       error: new Error(ErrorCode.SOMETHING_WENT_WRONG),
     };

@@ -19,12 +19,7 @@ const { requireAuth } = require('../middleware/auth');
 router.use(requireAuth);
 
 router.get('/my-account', getMyAccount);
-router.post(
-  '/create-contact',
-  [body('reminder_name').isString(), body('account_number').isString()],
-  validateRequest,
-  createContact
-);
+router.post('/create-contact', [body('account_number').isString()], validateRequest, createContact);
 
 router.get('/list-contacts', getAllContacts);
 router.put('/list-contacts/:account_number', updateContact);
