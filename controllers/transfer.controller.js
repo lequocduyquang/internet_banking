@@ -25,7 +25,7 @@ const transactionPartner = async (req, res, next) => {
       return next(createErrors(400, 'Transaction is not allowed'));
     }
     const transactionData = await decrypt({ newPrivateKey: privateKey, encrypted: message });
-    const result = await transferService.handleTransaction(transactionData);
+    const result = await transferService.handleTransactionPartner(transactionData);
     res.status(200).json({
       message: 'Success',
       data: result,

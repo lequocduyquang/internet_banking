@@ -10,7 +10,7 @@ module.exports = (sequelize, DataTypes) => {
         autoIncrement: true,
       },
       creator_customer_id: DataTypes.INTEGER, // Người tạo nhắc nợ
-      reminder_id: DataTypes.STRING, // Số tài khoản người bị nhắc nợ
+      reminder_id: DataTypes.INTEGER, // Số tài khoản người bị nhắc nợ
       amount: DataTypes.FLOAT,
       message: DataTypes.TEXT, // Nội dung nhắc nợ
       payment_status: DataTypes.BOOLEAN, // false: chưa trả nợ | true: đã trả nợ

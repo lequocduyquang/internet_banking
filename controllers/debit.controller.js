@@ -4,19 +4,20 @@ const logger = require('../utils/logger');
 const debitService = require('../services/debit.service');
 const { redisClient } = require('../libs/redis');
 const models = require('../models');
+const { buildPaginationOpts, decoratePaginatedResult } = require('../utils/paginate');
 
 const { Debit } = models;
 
 const getAllDebits = async (req, res, next) => {
   try {
     const { id } = req.user;
+    const paginateOpts = buildPaginationOpts(req);
     const result = await debitService.getAllDebits(id);
     if (result.error) {
       return next(createErrors(400, result.error.message));
     }
-    return res.status(200).json({
-      success: true,
-      debits: result.data,
+    return res.status(200).send({
+      ...decoratePaginatedResult(result.data, paginateOpts),
     });
   } catch (error) {
     return next(createErrors(400, error.message));

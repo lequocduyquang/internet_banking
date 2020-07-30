@@ -26,25 +26,59 @@ const handleTransaction = async transactionData => {
       transfer_method: transferMethod, // 1: tru phi nguoi gui, 2: tru phi nguoi nhan
       partner_code: partnerCode,
     } = transactionData;
-
+    // Check người nhận có nằm trong list contact hay không ?
+    /**
+     * Hiện tại đang đi query luôn db chứ ko check field list_contacts
+     */
     // 1. Xác nhan tai khoan nguoi gui + nguoi nhan co ton tai hay ko ?
-    const [sender, receiver] = Promise.all([
-      Customer.findOne({
-        where: {
-          account_number: senderAccountNumber,
-        },
-      }),
-      Customer.findOne({
+    // const [sender, receiver] = Promise.all([
+    //   Customer.findOne({
+    //     where: {
+    //       account_number: senderAccountNumber,
+    //     },
+    //   }),
+    //   Customer.findOne({
+    //     where: {
+    //       account_number: receiverAccountNumber,
+    //     },
+    //   }),
+    // ]);
+    // if (!sender || !receiver) {
+    //   logger.info('Account is not valid');
+    //   return {
+    //     error: new Error('Account is not valid'),
+    //   };
+    // }
+
+    // 1' : Update lại flow trên
+    const sender = await Customer.findOne({
+      where: {
+        account_number: senderAccountNumber,
+      },
+    });
+    if (!sender) {
+      logger.info('Account sender is not valid');
+      return {
+        error: new Error('Account sender is not valid'),
+      };
+    }
+    let receiver;
+    if (
+      _.isNil(
+        sender.list_contacts.find(contact => contact.account_number === receiverAccountNumber)
+      )
+    ) {
+      receiver = await Customer.findOne({
         where: {
           account_number: receiverAccountNumber,
         },
-      }),
-    ]);
-    if (!sender || !receiver) {
-      logger.info('Account is not valid');
-      return {
-        error: new Error('Account is not valid'),
-      };
+      });
+      if (!receiver) {
+        logger.info('Account receiver is not valid');
+        return {
+          error: new Error('Account receiver is not valid'),
+        };
+      }
     }
 
     // 2: Tạo 1 transaction log -> progress status = 0 (Chua thuc hien)
@@ -82,6 +116,78 @@ const handleTransaction = async transactionData => {
     return await sendMail(sender.email, emailContent);
   } catch (err) {
     logger.error(err);
+    return {
+      error: new Error(ErrorCode.SOMETHING_WENT_WRONG),
+    };
+  }
+};
+
+const handleTransactionPartner = async transactionData => {
+  try {
+    if (!transactionData) {
+      logger.info('Transaction data is not valid');
+      return {
+        error: new Error('Transaction data is required'),
+      };
+    }
+    const {
+      sender_account_number: senderAccountNumber,
+      receiver_account_number: receiverAccountNumber,
+      amount,
+      message,
+      transaction_type: transactionType,
+      transfer_method: transferMethod, // 1: tru phi nguoi gui, 2: tru phi nguoi nhan
+      partner_code: partnerCode,
+    } = transactionData;
+    // Call API to verify acc in another banking
+    const sender = await Customer.findOne({
+      where: {
+        account_number: senderAccountNumber,
+      },
+    });
+    if (!sender) {
+      logger.info('Account sender is not valid');
+      return {
+        error: new Error('Account sender is not valid'),
+      };
+    }
+
+    // Flow còn lại tương tự
+    // 2: Tạo 1 transaction log -> progress status = 0 (Chua thuc hien)
+    const transactionLog = await TransactionLog.create({
+      transaction_type: transactionType,
+      transfer_method: transferMethod,
+      is_actived: true,
+      is_notified: false,
+      sender_account_number: senderAccountNumber,
+      receiver_account_number: receiverAccountNumber,
+      amount,
+      message,
+      partner_code: partnerCode || '',
+    });
+
+    // 3. Tạo ra 1 mã OTP 6 số -> store vào redis với expired_time = 30 phút
+    const OTPCode = new Random().integer(100000, 999999);
+    const cachedData = {
+      id: transactionLog.id,
+      transaction_type: transactionType,
+      transfer_method: transferMethod,
+      sender_account_number: senderAccountNumber,
+      receiver_account_number: receiverAccountNumber,
+      amount,
+    };
+    await redisClient.setAsync(`Transfer:${OTPCode}`, JSON.stringify(cachedData), 'EX', 30 * 60); // Expired 30 phút
+    // 4. Push email tới người thực hiện giao dịch
+    const emailContent = `
+      <p>Xác nhận giao dịch</p>
+      <h4>
+        Nhập mã OTP để xác nhận giao dịch
+        <i>${OTPCode}</i>
+      </h4>
+    `;
+    return await sendMail(sender.email, emailContent);
+  } catch (error) {
+    logger.error(`Transaction partner error: ${error.message}`);
     return {
       error: new Error(ErrorCode.SOMETHING_WENT_WRONG),
     };
@@ -145,5 +251,6 @@ const verifyOTP = async ({ OTP }) => {
 
 module.exports = {
   handleTransaction,
+  handleTransactionPartner,
   verifyOTP,
 };
