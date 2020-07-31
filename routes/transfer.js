@@ -22,21 +22,21 @@ router.post(
   verifyInternalAccount
 );
 
-// router.post(
-//   '/partner/verify',
-//   [body('receiver_account_number').isString()],
-//   validateRequest,
-//   verifyPartnerAccount
-// );
+router.post(
+  '/partner/verify',
+  [body('receiver_account_number').isString()],
+  validateRequest,
+  verifyPartnerAccount
+);
 
 router.post(
-  '/partner/create',
+  '/partner',
   [body('message').isString(), body('privateKey').isString()],
   validateRequest,
   transactionPartner
 );
 router.post(
-  '/internal/create',
+  '/internal',
   [
     body('sender_account_number').isString(),
     body('receiver_account_number').isString(),

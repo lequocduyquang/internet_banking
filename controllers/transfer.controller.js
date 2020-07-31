@@ -21,6 +21,22 @@ const verifyInternalAccount = async (req, res, next) => {
   }
 };
 
+const verifyPartnerAccount = async (req, res, next) => {
+  try {
+    const result = await transferService.verifyPartnerAccount({
+      sender: req.user,
+      receiver: req.body.receiver_account_number,
+    });
+    res.status(200).json({
+      message: 'Success',
+      data: result,
+    });
+  } catch (error) {
+    logger.error(`Verify partner error ${error}`);
+    return next(createErrors(400, error.message));
+  }
+};
+
 const transferInternal = async (req, res, next) => {
   try {
     const result = await transferService.handleTransaction(req.body);
@@ -68,6 +84,7 @@ const verifyOTP = async (req, res, next) => {
 
 module.exports = {
   verifyInternalAccount,
+  verifyPartnerAccount,
   transactionPartner,
   transferInternal,
   verifyOTP,

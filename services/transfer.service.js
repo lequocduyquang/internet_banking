@@ -1,4 +1,5 @@
 const _ = require('lodash');
+const axios = require('axios');
 const { Random } = require('random-js');
 
 const { ErrorCode } = require('../constants/ErrorCode');
@@ -36,6 +37,40 @@ const verifyInternalAccount = async ({ sender, receiver }) => {
       attributes: ['username', 'account_number'],
     });
     return foundReceiver;
+  } catch (error) {
+    logger.error(`Error when verify transfer internal: ${error}`);
+    return {
+      error: new Error(ErrorCode.SOMETHING_WENT_WRONG),
+    };
+  }
+};
+
+const verifyPartnerAccount = async ({ sender, receiver }) => {
+  try {
+    const foundSender = await Customer.findOne({
+      where: {
+        id: sender.id,
+      },
+    });
+    if (!foundSender) {
+      logger.info('Account sender is not valid');
+      return {
+        error: new Error('Account sender is not valid'),
+      };
+    }
+    const foundContactList = foundSender.list_contact.find(
+      item => item.account_number === receiver
+    );
+    if (foundContactList) {
+      console.log('Get from contact list');
+      return foundContactList;
+    }
+    const options = {
+      url: '',
+      method: 'GET',
+    };
+    const foundReceiver = await axios(options);
+    return foundReceiver.data; // Verify lại với bên cung cấp API để viết axios cho đúng
   } catch (error) {
     logger.error(`Error when verify transfer internal: ${error}`);
     return {
@@ -293,6 +328,7 @@ const verifyOTP = async ({ OTP }) => {
 
 module.exports = {
   verifyInternalAccount,
+  verifyPartnerAccount,
   handleTransaction,
   handleTransactionPartner,
   verifyOTP,
