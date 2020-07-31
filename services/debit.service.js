@@ -53,6 +53,7 @@ const create = async (id, data) => {
       reminder_id: reminder_id,
       amount: amount,
       message: message,
+      is_actived: 1,
       is_notified: 1,
       payment_status: 0, // Chưa trả nợ
     });
@@ -100,6 +101,7 @@ const getAllDebits = async id => {
   try {
     const debits = await Debit.paginate({
       where: {
+        is_actived: 1,
         [Op.or]: {
           creator_customer_id: id,
           reminder_id: id,

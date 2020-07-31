@@ -5,8 +5,9 @@ const debitService = require('../services/debit.service');
 const { redisClient } = require('../libs/redis');
 const models = require('../models');
 const { buildPaginationOpts, decoratePaginatedResult } = require('../utils/paginate');
+const { sendMail } = require('../utils/mailer');
 
-const { Debit } = models;
+const { Debit, Customer } = models;
 
 const getAllDebits = async (req, res, next) => {
   try {
@@ -61,15 +62,43 @@ const deleteDebit = async (req, res, next) => {
         message: 'Debit not found',
       });
     }
-    redisClient.hgetall('socketIds', (err, result) => {
-      console.log('Result: ', result[`Customer|${id}`]);
-      io.to(result[`Customer|${foundDebit.reminder_id}`]).emit(
-        'deletDebitNoti',
-        `Thông báo xóa nhắc nợ từ user ${req.user.username}`
-      );
+    // 1. Nhắc nợ được hủy từ người tạo
+    const isCreator = await Debit.findOne({
+      where: {
+        creator_customer_id: req.user.id,
+      },
     });
-    foundDebit.setDataValue('is_actived', false);
+    if (!_.isEmpty(isCreator)) {
+      redisClient.hgetall('socketIds', (err, result) => {
+        console.log('Xóa nhắc nợ từ người tạo: ', result[`Customer|${foundDebit.reminder_id}`]);
+        io.to(result[`Customer|${foundDebit.reminder_id}`]).emit(
+          'deletDebitNoti',
+          `Thông báo xóa nhắc nợ từ user ${req.user.username}`
+        );
+      });
+    } else {
+      redisClient.hgetall('socketIds', (err, result) => {
+        console.log(
+          'Xóa nhắc nợ từ người bị nhắc: ',
+          result[`Customer|${foundDebit.creator_customer_id}`]
+        );
+        io.to(result[`Customer|${foundDebit.creator_customer_id}`]).emit(
+          'deletDebitNoti',
+          `Thông báo xóa nhắc nợ từ user ${req.user.username}`
+        );
+      });
+    }
+    const reminder = await Customer.findOne({
+      where: {
+        id: foundDebit.reminder_id,
+      },
+    });
+    foundDebit.setDataValue('is_actived', 0);
     await foundDebit.save();
+    const emailContent = `
+      <p>Thông báo nhắc nợ đã được hủy từ ${req.user.username}</p>
+    `;
+    sendMail(reminder.email, emailContent);
     return res.status(200).json({
       message: 'Hủy nhắc nợ thành công',
     });
