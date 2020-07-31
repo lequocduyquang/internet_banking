@@ -1,15 +1,15 @@
 /* eslint-disable camelcase */
 const _ = require('lodash');
-const Bull = require('bull');
-const moment = require('moment');
+// const Bull = require('bull');
+// const moment = require('moment');
 const { Op } = require('sequelize');
 const { Random } = require('random-js');
 const { sendMail } = require('../utils/mailer');
 
 const models = require('../models');
-const { NOTI_DEBIT_QUEUE, REDIS_URL } = require('../constants/queue');
+// const { NOTI_DEBIT_QUEUE, REDIS_URL } = require('../constants/queue');
 
-const notiDebitQueue = new Bull(NOTI_DEBIT_QUEUE, REDIS_URL);
+// const notiDebitQueue = new Bull(NOTI_DEBIT_QUEUE, REDIS_URL);
 
 const { Debit, Customer, TransactionLog } = models;
 const { redisClient } = require('../libs/redis');
@@ -41,7 +41,7 @@ const verifyContact = async accountNumber => {
 
 const create = async (id, data) => {
   try {
-    if (!data) {
+    if (_.isEmpty(data)) {
       logger.info('Debit data is not valid');
       return {
         error: new Error('Debit data is required'),
@@ -53,24 +53,38 @@ const create = async (id, data) => {
       reminder_id: reminder_id,
       amount: amount,
       message: message,
-      is_notified: true,
+      is_notified: 1,
+      payment_status: 0, // Chưa trả nợ
     });
-    const cachedData = {
-      creator_customer_id: id,
-      reminder_id: reminder_id,
-      amount: amount,
-      message: message,
-      created_at: moment(),
-    };
-    const key = `Debit:${newDebit.id}Creator:${id}:Reminder:${reminder_id}`;
-    const cacheKey = await redisClient.getAsync(key);
+    const reminder = await Customer.findOne({
+      where: {
+        id: reminder_id,
+      },
+    });
+    // const cachedData = {
+    //   creator_customer_id: id,
+    //   reminder_id: reminder_id,
+    //   amount: amount,
+    //   message: message,
+    //   created_at: moment(),
+    // };
+    // const key = `Debit:${newDebit.id}Creator:${id}:Reminder:${reminder_id}`;
+    // const cacheKey = await redisClient.getAsync(key);
 
-    if (!cacheKey) {
-      await redisClient.setexAsync(key, 86400, key); // expire in 1 day
-      await notiDebitQueue.add(cachedData, {
-        delay: 60000,
-      });
-    }
+    // if (!cacheKey) {
+    //   await redisClient.setexAsync(key, 86400, key); // expire in 1 day
+    //   await notiDebitQueue.add(cachedData, {
+    //     delay: 60000,
+    //   });
+    // }
+    const emailContent = `
+      <p>Thông báo nhắc nợ</p>
+      <h4>
+        Số tiền: <i>${amount} VND</i><br/>
+        Lời nhắn: ${message}
+      </h4>
+    `;
+    sendMail(reminder.email, emailContent);
     return {
       data: newDebit,
     };
@@ -84,7 +98,7 @@ const create = async (id, data) => {
 
 const getAllDebits = async id => {
   try {
-    const debits = await Debit.findAll({
+    const debits = await Debit.paginate({
       where: {
         [Op.or]: {
           creator_customer_id: id,

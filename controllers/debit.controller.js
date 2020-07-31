@@ -16,9 +16,7 @@ const getAllDebits = async (req, res, next) => {
     if (result.error) {
       return next(createErrors(400, result.error.message));
     }
-    return res.status(200).send({
-      ...decoratePaginatedResult(result.data, paginateOpts),
-    });
+    return res.status(200).send(decoratePaginatedResult(result.data, paginateOpts));
   } catch (error) {
     return next(createErrors(400, error.message));
   }
@@ -36,6 +34,9 @@ const createDebit = async (req, res, next) => {
       );
     });
     const result = await debitService.create(id, req.body);
+    if (result.error) {
+      return next(createErrors(400, result.error.message));
+    }
     return res.status(200).json({
       message: 'Success',
       data: result.data,
