@@ -43,7 +43,7 @@ app.use(limiter);
 require('./middleware/docs')(app);
 
 app.get('/', (req, res) => {
-  res.send('Welcome to Internet Banking API');
+  res.send('Welcome to FIT Internet Banking API');
 });
 
 app.use('/api/v1/auth', require('./routes/auth'));
