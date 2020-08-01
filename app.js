@@ -8,7 +8,7 @@ const http = require('http');
 const rateLimit = require('express-rate-limit');
 const cors = require('cors');
 const { ErrorCode } = require('./constants/ErrorCode');
-const logger = require('./utils/logger');
+// const logger = require('./utils/logger');
 require('express-async-errors');
 const { initSocket } = require('./libs/socket');
 
@@ -71,6 +71,6 @@ app.use(function (err, req, res, next) {
 });
 
 const PORT = process.env.PORT || 5000;
-server.listen(PORT, () => logger.info(`Server started on port ${PORT}`));
+server.listen(PORT, () => console.log(`Server started on port ${PORT}`));
 
 module.exports = app;
