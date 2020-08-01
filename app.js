@@ -40,7 +40,7 @@ app.use(limiter);
 
 require('./middleware/docs')(app);
 
-app.get('/health', (req, res) => {
+app.get('/', (req, res) => {
   res.send('Welcome to Internet Banking API');
 });
 
