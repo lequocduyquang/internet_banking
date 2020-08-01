@@ -1,7 +1,7 @@
 /* eslint-disable no-param-reassign */
 const sequelizePaginate = require('sequelize-paginate');
 const jwt = require('jsonwebtoken');
-const bcrypt = require('bcrypt');
+const bcrypt = require('bcryptjs');
 
 module.exports = (sequelize, DataTypes) => {
   const Admin = sequelize.define(

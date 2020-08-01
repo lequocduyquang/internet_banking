@@ -1,6 +1,6 @@
 const _ = require('lodash');
 const { Random } = require('random-js');
-const bcrypt = require('bcrypt');
+const bcrypt = require('bcryptjs');
 const models = require('../models');
 const { ErrorCode } = require('../constants/ErrorCode');
 const logger = require('../utils/logger');

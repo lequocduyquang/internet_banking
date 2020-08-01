@@ -1,6 +1,6 @@
 /* eslint-disable no-param-reassign */
 const sequelizePaginate = require('sequelize-paginate');
-const bcrypt = require('bcrypt');
+const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 
 module.exports = (sequelize, DataTypes) => {
