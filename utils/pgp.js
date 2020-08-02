@@ -31,7 +31,16 @@ const decrypt = async ({ newPrivateKey, encrypted }) => {
   return decrypted;
 };
 
+const signPartner = async privateKey => {
+  const { data: cleartext } = await openpgp.sign({
+    message: openpgp.cleartext.fromText('Hello, World!'),
+    privateKeys: [privateKey],
+  });
+  return cleartext;
+};
+
 module.exports = {
   encrypt,
   decrypt,
+  signPartner,
 };

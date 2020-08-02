@@ -20,7 +20,14 @@ const getAccount = async customer => {
       where: {
         email: customer.email,
       },
-      attributes: ['fullname', 'account_number', 'account_balance', 'phone', 'address'],
+      attributes: [
+        'fullname',
+        'account_number',
+        'account_balance',
+        'phone',
+        'address',
+        'list_contact',
+      ],
     });
     if (_.isNil(account)) {
       logger.info(`POSTGRES: ${ErrorCode.CUSTOMER_INFO_NOT_FOUND}`);

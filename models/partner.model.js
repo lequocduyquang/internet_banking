@@ -20,7 +20,8 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.STRING,
         primaryKey: true,
       },
-
+      public_key: DataTypes.TEXT,
+      private_key: DataTypes.TEXT,
       updated_at: DataTypes.DATE,
       created_at: DataTypes.DATE,
     },

@@ -55,10 +55,10 @@ const verifyPartner = async (req, res, next) => {
           code,
         },
       });
-      console.log('Found partner: ', foundPartner);
       if (!foundPartner) {
         return next(createErrors(401, ErrorCode.PARTNER_INFO_NOT_FOUND));
       }
+      req.user = foundPartner;
       next();
     }
   } catch (error) {
