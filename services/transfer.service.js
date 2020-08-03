@@ -1,5 +1,7 @@
 const _ = require('lodash');
 const axios = require('axios');
+const crypto = require('crypto');
+const openpgp = require('openpgp');
 const { Random } = require('random-js');
 
 const { ErrorCode } = require('../constants/ErrorCode');
@@ -9,6 +11,53 @@ const { sendMail } = require('../utils/mailer');
 
 const { Customer, TransactionLog } = models;
 const { redisClient } = require('../libs/redis');
+
+const customGetInfoPartner = async accountId => {
+  const secretKey = 'day la secret key';
+  const partnerPublicKey = '';
+  const ourPrivateKey = '';
+  const passphrase = '123456';
+
+  const accountIdHashed = crypto.createHmac('SHA1', secretKey).update(accountId).digest('hex');
+
+  let { data: accountIdEncrypted } = await openpgp.encrypt({
+    message: openpgp.message.fromText(accountId),
+    publicKeys: (await openpgp.key.readArmored(partnerPublicKey)).keys,
+  });
+
+  accountIdEncrypted = accountIdEncrypted.replace(/\r/g, '\\n').replace(/\n/g, '');
+  const {
+    keys: [privateKey],
+  } = await openpgp.key.readArmored(ourPrivateKey);
+  await privateKey.decrypt(passphrase);
+
+  let { data: digitalSignature } = await openpgp.sign({
+    message: openpgp.cleartext.fromText(accountId),
+    privateKeys: [privateKey],
+  });
+
+  digitalSignature = digitalSignature.replace(/\r/g, '\\n').replace(/\n/g, '');
+  const currentTime = Math.round(new Date().getTime());
+  const entryTimeHashed = crypto
+    .createHmac('SHA1', secretKey)
+    .update(currentTime.toString())
+    .digest('hex');
+
+  let { data: entryTimeEncrypted } = await openpgp.encrypt({
+    message: openpgp.message.fromText(currentTime.toString()),
+    publicKeys: (await openpgp.key.readArmored(partnerPublicKey)).keys,
+  });
+
+  entryTimeEncrypted = entryTimeEncrypted.replace(/\r/g, '\\n').replace(/\n/g, '');
+
+  return {
+    digitalSignature,
+    accountIdHashed,
+    accountIdEncrypted,
+    entryTimeHashed,
+    entryTimeEncrypted,
+  };
+};
 
 const verifyInternalAccount = async ({ sender, receiver }) => {
   try {
@@ -65,9 +114,24 @@ const verifyPartnerAccount = async ({ sender, receiver }) => {
       console.log('Get from contact list');
       return foundContactList;
     }
+    const {
+      digitalSignature,
+      accountIdHashed,
+      accountIdEncrypted,
+      entryTimeHashed,
+      entryTimeEncrypted,
+    } = await customGetInfoPartner(receiver);
     const options = {
-      url: '',
+      url: 'http://localhost:5000/transactions/receiver-interbank',
       method: 'GET',
+      headers: {
+        x_partner_code: 'QUANGLE',
+        x_signature: digitalSignature,
+        x_account_id_hashed: accountIdHashed,
+        x_account_id_encrypted: accountIdEncrypted,
+        x_entry_time_encrypted: entryTimeEncrypted,
+        x_entry_time_hashed: entryTimeHashed,
+      },
     };
     const foundReceiver = await axios(options);
     return foundReceiver.data; // Verify lại với bên cung cấp API để viết axios cho đúng
@@ -231,8 +295,8 @@ const handleTransactionPartner = async transactionData => {
     const transactionLog = await TransactionLog.create({
       transaction_type: transactionType,
       transfer_method: transferMethod,
-      is_actived: true,
-      is_notified: false,
+      is_actived: 1,
+      is_notified: 0,
       sender_account_number: senderAccountNumber,
       receiver_account_number: receiverAccountNumber,
       amount,
