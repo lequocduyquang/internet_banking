@@ -96,7 +96,7 @@ const payin = async (req, res, next) => {
       where: {
         account_number: parsedData.account_number,
       },
-      attributes: { exclude: ['password', 'account_balance', 'list_contact'] },
+      attributes: { exclude: ['password', 'list_contact'] },
     });
     if (!customer) {
       return res.status(404).send({
@@ -109,8 +109,8 @@ const payin = async (req, res, next) => {
 
     const transactionLog = await TransactionLog.create({
       transaction_type: 2, // Partner
-      is_actived: true,
-      is_notified: false,
+      is_actived: 1,
+      is_notified: 0,
       receiver_account_number: parsedData.account_number,
       amount: parsedData.amount,
       message: parsedData.message,
@@ -125,6 +125,12 @@ const payin = async (req, res, next) => {
     return next(createErrors(400, error.message));
   }
 };
+
+// {
+//   "account_number": "3567913535",
+//   "amount": 100000,
+//   "message": "Chuyển tiền liên ngân hàng SangLe"
+// }
 
 const getTokenByPartner = async (req, res, next) => {
   try {
