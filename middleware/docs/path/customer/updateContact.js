@@ -1,31 +1,34 @@
 /**
  * @swagger
- * /api/v1/auth/customer/update_password:
+ * /api/v1/customer/list-contacts/{account_number}:
  *   put:
  *     tags:
  *       - Customer
- *     summary: "Update mật khẩu"
- *     description: Update mật khẩu
+ *     summary: "Update 1 liên hệ"
+ *     description: Update 1 liên hệ
  *     produces:
  *       - application/json
  *     security:
  *       - Bearer: []
  *     parameters:
- *       - name: currentPassword
+ *       - name: reminder_name
  *         type: string
  *         in: formData
  *         required: true
- *       - name: newPassword
+ *       - name: account_number
  *         type: string
- *         in: formData
+ *         in: path
  *         required: true
+ *         description: tài khoản contact
  *     responses:
  *      200:
  *          description: Kết quả
  *          schema:
  *              type: object
  *              properties:
- *                  user:
+ *                  success:
+ *                      type: string
+ *                  contact:
  *                      type: object
  *                      properties:
  *                        id:
@@ -42,27 +45,27 @@
  *                          type: string
  *                        list_contact:
  *                          type: array
- *                  accessToken:
- *                          type: string
- *                  refreshToken:
- *                          type: string
  *              example:
  *                {
- *                  "user": {
+ *                  "success": true,
+ *                  "contact": {
  *                    "id": 21,
  *                    "username": "customer 4",
  *                    "fullname": "Customer 4",
  *                    "email": "customer4@gmail.com",
- *                    "password": "12345",
+ *                    "password": "$2b$10$1OZi/r.za5dx/ao4AOlAKOqAi6sTl7njhbfo.CFA6y3dL9186dwTy",
  *                    "status": 1,
  *                    "account_number": "7496690248",
  *                    "account_balance": 0,
  *                    "phone": "123456789",
  *                    "address": null,
- *                    "list_contact": [],
- *                  },
- *                  accessToken: "",
- *                  refreshToken: ""
+ *                    "list_contact": [
+ *                       {
+ *                          "reminder_name": "Customer 4",
+ *                          "account_number": "7414483919"
+ *                       }
+ *                    ],
+ *                  }
  *                }
  *
  */

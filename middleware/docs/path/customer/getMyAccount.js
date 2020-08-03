@@ -4,8 +4,8 @@
  *   get:
  *     tags:
  *       - Customer
- *     summary: "Tìm 1 tài khoản customer"
- *     description: Tìm 1 tài khỏan customer
+ *     summary: "Xem thông tin cá nhân"
+ *     description: Xem thông tin cá nhân
  *     produces:
  *       - application/json
  *     security:

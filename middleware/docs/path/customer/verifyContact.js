@@ -1,11 +1,11 @@
 /**
  * @swagger
- * /api/v1/employee/payin:
+ * /api/v1/customer/verify-contact:
  *   post:
  *     tags:
- *       - Employee
- *     summary: "Nạp tiền vào 1 tài khoản customer"
- *     description: Nạp tiền vào 1 tài khỏan customer
+ *       - Customer
+ *     summary: "Verify 1 tài khoản liên hệ trước khi thêm"
+ *     description: Verify 1 tài khoản liên hệ trước khi thêm
  *     produces:
  *       - application/json
  *     security:
@@ -13,10 +13,6 @@
  *     parameters:
  *       - name: account_number
  *         type: string
- *         in: formData
- *         required: true
- *       - name: amount
- *         type: integer
  *         in: formData
  *         required: true
  *     responses:
@@ -56,34 +52,6 @@
  *                          type: date
  *                        updated_at:
  *                          type: date
- *                  transaction_log:
- *                      type: object
- *                      properties:
- *                        id:
- *                          type: integer
- *                        transaction_type:
- *                          type: integer
- *                        sender_account_number:
- *                          type: string
- *                        receiver_account_number:
- *                          type: string
- *                        amount:
- *                          type: integer
- *                        message:
- *                          type: string
- *                        transaction_method:
- *                          type: string
- *                        is_actived:
- *                          type: integer
- *                        is_notified:
- *                          type: integer
- *                        partner_code:
- *                          type: string
- *                        created_at:
- *                          type: date
- *                        updated_at:
- *                          type: date
- *
  *              example:
  *                {
  *                  "success": true,
@@ -102,20 +70,6 @@
  *                    "created_at": "2020-06-28T02:43:38.553Z",
  *                    "updated_at": "2020-06-28T02:43:38.553Z"
  *                  },
- *                  "transaction_log": {
- *                    "id": 45,
- *                    "transaction_type": 1,
- *                    "sender_account_number": "GDV",
- *                    "receiver_account_number": "7340722378",
- *                    "amount": 100000,
- *                    "message": "Customer 2 nộp 100000vnd vào tài khoản",
- *                    "transaction_method": null,
- *                    "is_actived": null,
- *                    "is_notified": null,
- *                    "partner_code": null,
- *                    "created_at": "2020-06-28T03:04:26.928Z",
- *                    "updated_at": "2020-06-28T03:04:26.928Z"
- *                  }
  *                }
  *
  */

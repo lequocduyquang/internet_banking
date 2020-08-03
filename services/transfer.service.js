@@ -160,29 +160,6 @@ const handleTransaction = async transactionData => {
       transfer_method: transferMethod, // 1: tru phi nguoi gui, 2: tru phi nguoi nhan
       partner_code: partnerCode,
     } = transactionData;
-    // Check người nhận có nằm trong list contact hay không ?
-    /**
-     * Hiện tại đang đi query luôn db chứ ko check field list_contacts
-     */
-    // 1. Xác nhan tai khoan nguoi gui + nguoi nhan co ton tai hay ko ?
-    // const [sender, receiver] = Promise.all([
-    //   Customer.findOne({
-    //     where: {
-    //       account_number: senderAccountNumber,
-    //     },
-    //   }),
-    //   Customer.findOne({
-    //     where: {
-    //       account_number: receiverAccountNumber,
-    //     },
-    //   }),
-    // ]);
-    // if (!sender || !receiver) {
-    //   logger.info('Account is not valid');
-    //   return {
-    //     error: new Error('Account is not valid'),
-    //   };
-    // }
 
     // 1' : Update lại flow trên
     const sender = await Customer.findOne({
@@ -196,32 +173,17 @@ const handleTransaction = async transactionData => {
         error: new Error('Account sender is not valid'),
       };
     }
-    if (sender.account_balance <= 0) {
-      logger.info('Account balance must be > 0');
-      return {};
+    if (sender.account_balance < amount) {
+      logger.info('Account balance must be >= amount');
+      return {
+        error: new Error('Account balance must be >= amount'),
+      };
     }
-    // console.log('Sender', sender.list_contact);
-    // let receiver;
-    // if (
-    //   _.isNil(sender.list_contact.find(contact => contact.account_number === receiverAccountNumber))
-    // ) {
-    //   receiver = await Customer.findOne({
-    //     where: {
-    //       account_number: receiverAccountNumber,
-    //     },
-    //   });
-    //   if (!receiver) {
-    //     logger.info('Account receiver is not valid');
-    //     return {
-    //       error: new Error('Account receiver is not valid'),
-    //     };
-    //   }
-    // }
 
     // 2: Tạo 1 transaction log -> progress status = 0 (Chua thuc hien)
     const transactionLog = await TransactionLog.create({
-      transaction_type: transactionType || 1,
-      transfer_method: transferMethod,
+      transaction_type: transactionType || 1, // 1: INTERNAL
+      transfer_method: transferMethod, // Trừ phí 1: Người gửi - 2: Người nhận
       is_actived: 1,
       is_notified: 0,
       sender_account_number: senderAccountNumber,
@@ -369,6 +331,13 @@ const verifyOTP = async ({ OTP }) => {
       } else {
         await receiver.updateBalance(amount, fee);
       }
+    }
+    if (!_.find(sender.list_contact, { account_number: receiver.account_number })) {
+      sender.list_contact.push({
+        reminder_name: receiver.username,
+        account_number: receiver.account_number,
+      });
+      sender.setDataValue('list_contact', sender.list_contact);
     }
     await sender.save();
     await receiver.save();

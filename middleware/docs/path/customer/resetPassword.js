@@ -1,21 +1,21 @@
 /**
  * @swagger
- * /api/v1/auth/customer/update_password:
+ * /api/v1/auth/customer/reset_password:
  *   put:
  *     tags:
  *       - Customer
- *     summary: "Update mật khẩu"
- *     description: Update mật khẩu
+ *     summary: "Reset mật khẩu"
+ *     description: Reset mật khẩu
  *     produces:
  *       - application/json
  *     security:
  *       - Bearer: []
  *     parameters:
- *       - name: currentPassword
+ *       - name: newPassword
  *         type: string
  *         in: formData
  *         required: true
- *       - name: newPassword
+ *       - name: email
  *         type: string
  *         in: formData
  *         required: true

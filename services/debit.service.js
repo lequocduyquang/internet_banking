@@ -62,22 +62,6 @@ const create = async (id, data) => {
         id: reminder_id,
       },
     });
-    // const cachedData = {
-    //   creator_customer_id: id,
-    //   reminder_id: reminder_id,
-    //   amount: amount,
-    //   message: message,
-    //   created_at: moment(),
-    // };
-    // const key = `Debit:${newDebit.id}Creator:${id}:Reminder:${reminder_id}`;
-    // const cacheKey = await redisClient.getAsync(key);
-
-    // if (!cacheKey) {
-    //   await redisClient.setexAsync(key, 86400, key); // expire in 1 day
-    //   await notiDebitQueue.add(cachedData, {
-    //     delay: 60000,
-    //   });
-    // }
     const emailContent = `
       <p>Thông báo nhắc nợ</p>
       <h4>
@@ -210,8 +194,8 @@ const paid = async ({ customer, debitId }) => {
     // 2: Tạo 1 transaction log -> progress status = 0 (Chua thuc hien)
     const transactionLog = await TransactionLog.create({
       transaction_type: 3,
-      is_actived: true,
-      is_notified: false,
+      is_actived: 1,
+      is_notified: 0,
       sender_account_number: beReminder.account_number,
       receiver_account_number: reminder.account_number,
       amount: debit.amount,

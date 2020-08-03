@@ -17,12 +17,6 @@ const { requireAuth } = require('../middleware/auth');
 router.use(requireAuth);
 
 router.get('/my-account', getMyAccount);
-router.post('/create-contact', [body('account_number').isString()], validateRequest, createContact);
-
-router.get('/list-contacts', getAllContacts);
-router.put('/list-contacts/:account_number', updateContact);
-router.delete('/list-contacts/:account_number', deleteContact);
-router.get('/history/:account_number', getHistory);
 
 router.post(
   '/verify-contact',
@@ -30,7 +24,11 @@ router.post(
   validateRequest,
   verifyContact
 );
-// router.get('/debits', getAllDebits);
-// router.post('/debit', createDebit);
+router.post('/create-contact', [body('account_number').isString()], validateRequest, createContact);
+router.get('/list-contacts', getAllContacts);
+router.put('/list-contacts/:account_number', updateContact);
+router.delete('/list-contacts/:account_number', deleteContact);
+
+router.get('/history/:account_number', getHistory);
 
 module.exports = router;

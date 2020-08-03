@@ -40,6 +40,9 @@ const verifyPartnerAccount = async (req, res, next) => {
 const transferInternal = async (req, res, next) => {
   try {
     const result = await transferService.handleTransaction(req.body);
+    if (result.error) {
+      return next(createErrors(400, result.error.message));
+    }
     res.status(200).json({
       message: 'Success',
       data: result,

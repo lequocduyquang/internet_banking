@@ -1,7 +1,7 @@
 /**
  * @swagger
  * /api/v1/customer/create-contact:
- *   put:
+ *   post:
  *     tags:
  *       - Customer
  *     summary: "Tạo 1 liên hệ"
@@ -14,7 +14,6 @@
  *       - name: reminder_name
  *         type: string
  *         in: formData
- *         required: true
  *       - name: account_number
  *         type: string
  *         in: formData

@@ -151,13 +151,36 @@ const verifyOTP = async (req, res, next) => {
 const verifyContact = async (req, res, next) => {
   try {
     const { account_number: accountNumber } = req.body;
-    const result = await debitService.verifyContact(accountNumber);
-    if (result.error) {
-      return next(createErrors(400, result.error.message));
+    const foundOwner = await Customer.findOne({
+      where: {
+        id: req.user.id,
+      },
+    });
+    if (!foundOwner) {
+      logger.info('Account owner is not valid');
+      return {
+        error: new Error('Account owner is not valid'),
+      };
     }
-    return res.status(200).json({
-      success: true,
-      customer: result.data,
+    const foundContactList = foundOwner.list_contact.find(
+      item => item.account_number === accountNumber
+    );
+    if (foundContactList) {
+      console.log('Get from contact list');
+      return res.status(200).send({
+        message: 'Success',
+        data: foundContactList,
+      });
+    }
+    const foundBeReminder = await Customer.findOne({
+      where: {
+        account_number: accountNumber,
+      },
+      attributes: ['username', 'account_number'],
+    });
+    return res.status(200).send({
+      message: 'Success',
+      data: foundBeReminder,
     });
   } catch (error) {
     return next(createErrors(400, error.message));

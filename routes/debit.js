@@ -16,17 +16,16 @@ const { requireAuth } = require('../middleware/auth');
 router.use(requireAuth);
 
 router.get('/', getAllDebits);
-router.post('/', createDebit);
-router.put('/:id', deleteDebit);
-router.post('/pay', payDebit);
-
-router.post('/verify/code', [body('OTP').notEmpty()], validateRequest, verifyOTP);
-
 router.post(
   '/verify-contact',
   [body('account_number').isString().withMessage('Account number must be valid')],
   validateRequest,
   verifyContact
 );
+router.post('/', createDebit);
+router.put('/:id', deleteDebit);
+router.post('/pay', payDebit);
+
+router.post('/verify/code', [body('OTP').notEmpty()], validateRequest, verifyOTP);
 
 module.exports = router;
