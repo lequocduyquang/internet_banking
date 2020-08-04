@@ -35,7 +35,7 @@ const verifyInternalAccount = async ({ sender, receiver }) => {
       where: {
         account_number: receiver,
       },
-      attributes: ['username', 'account_number'],
+      attributes: ['username', 'account_number', 'email', 'phone', 'address'],
     });
     return foundReceiver;
   } catch (error) {

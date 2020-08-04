@@ -181,7 +181,7 @@ const verifyContact = async (req, res, next) => {
       where: {
         account_number: accountNumber,
       },
-      attributes: ['username', 'account_number'],
+      attributes: ['username', 'account_number', 'email', 'phone', 'address'],
     });
     return res.status(200).send({
       message: 'Success',
