@@ -5,6 +5,10 @@ const { generatePartnerCode } = require('../utils/partner');
 const models = require('../models');
 
 const { Partner, Customer, TransactionLog } = models;
+const PARTNER_CODE = {
+  S2Q: 'QUANGNGUYEN',
+};
+const config = require('../config');
 
 const generateNewPrivateKey = async (priKey, password) => {
   const {
@@ -81,13 +85,14 @@ const payin = async (req, res, next) => {
     if (!partner) {
       return next(createErrors(400, 'Partner is not found'));
     }
-
-    const verified = await verifySign(partner.public_key, sign_partner);
-    const { valid } = verified.signatures[0];
-    if (!valid) {
-      return res.status(400).send({
-        message: 'Signature is not valid',
-      });
+    if (partner.code === PARTNER_CODE.S2Q) {
+      const verified = await verifySign(config.quangnguyen_public_pgp_key, sign_partner); // PUBLIC KEY này bên đối tác đưa
+      const { valid } = verified.signatures[0];
+      if (!valid) {
+        return res.status(400).send({
+          message: 'Signature is not valid',
+        });
+      }
     }
     const privateKey = await generateNewPrivateKey(partner.private_key, partner.password);
     const data = await decryptMessage(partner.public_key, privateKey, message);
@@ -127,9 +132,13 @@ const payin = async (req, res, next) => {
 };
 
 // {
-//   "account_number": "3567913535",
+//   "account_number": "3919276761",
 //   "amount": 100000,
-//   "message": "Chuyển tiền liên ngân hàng SangLe"
+//   "message": "Chuyển tiền liên ngân hàng QuangNguyen"
+// }
+
+// {
+//   "account_number": "3919276761"
 // }
 
 const getTokenByPartner = async (req, res, next) => {
