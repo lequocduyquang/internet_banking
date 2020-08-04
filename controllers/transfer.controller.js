@@ -3,8 +3,6 @@ const createErrors = require('http-errors');
 const logger = require('../utils/logger');
 const transferService = require('../services/transfer.service');
 
-const { decrypt } = require('../utils/pgp');
-
 const verifyInternalAccount = async (req, res, next) => {
   try {
     const result = await transferService.verifyInternalAccount({
@@ -17,22 +15,6 @@ const verifyInternalAccount = async (req, res, next) => {
     });
   } catch (error) {
     logger.error(`Verify internal error ${error}`);
-    return next(createErrors(400, error.message));
-  }
-};
-
-const verifyPartnerAccount = async (req, res, next) => {
-  try {
-    const result = await transferService.verifyPartnerAccount({
-      sender: req.user,
-      receiver: req.body.receiver_account_number,
-    });
-    res.status(200).json({
-      message: 'Success',
-      data: result,
-    });
-  } catch (error) {
-    logger.error(`Verify partner error ${error}`);
     return next(createErrors(400, error.message));
   }
 };
@@ -53,23 +35,6 @@ const transferInternal = async (req, res, next) => {
   }
 };
 
-const transactionPartner = async (req, res, next) => {
-  try {
-    const { message, privateKey } = req.body;
-    if (!message || !privateKey) {
-      return next(createErrors(400, 'Transaction is not allowed'));
-    }
-    const transactionData = await decrypt({ newPrivateKey: privateKey, encrypted: message });
-    const result = await transferService.handleTransactionPartner(transactionData);
-    res.status(200).json({
-      message: 'Success',
-      data: result,
-    });
-  } catch (error) {
-    return next(createErrors(400, error.message));
-  }
-};
-
 const verifyOTP = async (req, res, next) => {
   try {
     const { OTP } = req.body;
@@ -79,6 +44,39 @@ const verifyOTP = async (req, res, next) => {
     }
     return res.status(200).send({
       valid: result.isValid,
+    });
+  } catch (error) {
+    return next(createErrors(400, error.message));
+  }
+};
+
+const verifyPartnerAccount = async (req, res, next) => {
+  try {
+    const result = await transferService.verifyPartnerAccount({
+      sender: req.user,
+      receiver: req.body.receiver_account_number,
+      partnerCode: req.body.partner_code,
+    });
+    res.status(200).json({
+      message: 'Success',
+      data: result.result,
+    });
+  } catch (error) {
+    logger.error(`Verify partner error ${error}`);
+    return next(createErrors(400, error.message));
+  }
+};
+
+const transactionPartner = async (req, res, next) => {
+  try {
+    const { transactionData } = req.body;
+    if (!transactionData) {
+      return next(createErrors(400, 'Transaction is not allowed'));
+    }
+    const result = await transferService.handleTransactionPartner(transactionData);
+    res.status(200).json({
+      message: 'Success',
+      data: result.result,
     });
   } catch (error) {
     return next(createErrors(400, error.message));

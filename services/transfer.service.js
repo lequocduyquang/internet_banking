@@ -1,15 +1,15 @@
 const _ = require('lodash');
-const axios = require('axios');
 const { Random } = require('random-js');
+const config = require('../config');
 
 const { ErrorCode } = require('../constants/ErrorCode');
 const logger = require('../utils/logger');
 const models = require('../models');
 const { sendMail } = require('../utils/mailer');
 
-const { Customer, TransactionLog } = models;
+const { Customer, TransactionLog, Partner } = models;
 const { redisClient } = require('../libs/redis');
-const { getCustomerInfoPartner } = require('../utils/partner');
+const { getCustomerInfoPartner, transferMoneyPartner } = require('../utils/partner');
 
 const verifyInternalAccount = async ({ sender, receiver }) => {
   try {
@@ -192,7 +192,7 @@ const verifyOTP = async ({ OTP }) => {
 };
 
 /** PARTNER */
-const verifyPartnerAccount = async ({ sender, receiver }) => {
+const verifyPartnerAccount = async ({ sender, receiver, partnerCode }) => {
   try {
     const foundSender = await Customer.findOne({
       where: {
@@ -212,27 +212,24 @@ const verifyPartnerAccount = async ({ sender, receiver }) => {
       console.log('Get from contact list');
       return foundContactList;
     }
-    const {
-      digitalSignature,
-      accountIdHashed,
-      accountIdEncrypted,
-      entryTimeHashed,
-      entryTimeEncrypted,
-    } = await getCustomerInfoPartner(receiver);
-    const options = {
-      url: 'http://localhost:5000/transactions/receiver-interbank',
-      method: 'GET',
-      headers: {
-        x_partner_code: 'QUANGLE',
-        x_signature: digitalSignature,
-        x_account_id_hashed: accountIdHashed,
-        x_account_id_encrypted: accountIdEncrypted,
-        x_entry_time_encrypted: entryTimeEncrypted,
-        x_entry_time_hashed: entryTimeHashed,
+    const partner = await Partner.findOne({
+      where: {
+        code: partnerCode,
       },
+    });
+    const foundReceiver = await getCustomerInfoPartner(
+      receiver,
+      partner.oublic_key,
+      config.our_private_pgp_key
+    );
+    if (foundReceiver.error) {
+      return {
+        error: new Error(foundReceiver.error),
+      };
+    }
+    return {
+      result: foundReceiver.result, // Verify lại với bên cung cấp API để viết axios cho đúng
     };
-    const foundReceiver = await axios(options);
-    return foundReceiver.data; // Verify lại với bên cung cấp API để viết axios cho đúng
   } catch (error) {
     logger.error(`Error when verify transfer internal: ${error}`);
     return {
@@ -277,6 +274,7 @@ const handleTransactionPartner = async transactionData => {
         error: new Error('Account balance must be >= amount'),
       };
     }
+    const partnerTransaction = await transferMoneyPartner(transactionData);
     // 2: Tạo 1 transaction log -> progress status = 0 (Chua thuc hien)
     const transactionLog = await TransactionLog.create({
       transaction_type: transactionType || 2, // PARTNER
