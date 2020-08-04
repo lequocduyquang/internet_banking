@@ -1,15 +1,10 @@
 /* eslint-disable camelcase */
 const _ = require('lodash');
-// const Bull = require('bull');
-// const moment = require('moment');
 const { Op } = require('sequelize');
 const { Random } = require('random-js');
 const { sendMail } = require('../utils/mailer');
 
 const models = require('../models');
-// const { NOTI_DEBIT_QUEUE, REDIS_URL } = require('../constants/queue');
-
-// const notiDebitQueue = new Bull(NOTI_DEBIT_QUEUE, REDIS_URL);
 
 const { Debit, Customer, TransactionLog } = models;
 const { redisClient } = require('../libs/redis');
@@ -39,7 +34,7 @@ const verifyContact = async accountNumber => {
   }
 };
 
-const create = async (id, data) => {
+const create = async (id, reminder, data) => {
   try {
     if (_.isEmpty(data)) {
       logger.info('Debit data is not valid');
@@ -47,21 +42,17 @@ const create = async (id, data) => {
         error: new Error('Debit data is required'),
       };
     }
-    const { reminder_id, amount, message } = data;
+    const { amount, message } = data;
     const newDebit = await Debit.create({
       creator_customer_id: id,
-      reminder_id: reminder_id,
+      reminder_id: reminder.id,
       amount: amount,
       message: message,
       is_actived: 1,
       is_notified: 1,
       payment_status: 0, // Chưa trả nợ
     });
-    const reminder = await Customer.findOne({
-      where: {
-        id: reminder_id,
-      },
-    });
+
     const emailContent = `
       <p>Thông báo nhắc nợ</p>
       <h4>

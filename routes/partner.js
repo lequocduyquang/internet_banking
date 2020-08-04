@@ -7,7 +7,7 @@ const {
 } = require('../controllers/partner.controller');
 
 const router = express.Router();
-// router.use(verifyPartner);
+router.use(verifyPartner);
 
 router.post('/token', getTokenByPartner);
 router.get('/getProfile', verifyPartner, getAccountProfile);

@@ -27,14 +27,19 @@ const createDebit = async (req, res, next) => {
   try {
     const { id, username } = req.user;
     const { io } = req;
+    const reminder = await Customer.findOne({
+      where: {
+        account_number: req.body.account_number,
+      },
+    });
     redisClient.hgetall('socketIds', (err, result) => {
       console.log('Create debit: ', result[`Customer|${id}`]);
-      io.to(result[`Customer|${req.body.reminder_id}`]).emit(
+      io.to(result[`Customer|${reminder.id}`]).emit(
         'debitNoti',
         `Thông báo nhắc nợ từ user ${username}. Số tiền là: ${req.body.amount}`
       );
     });
-    const result = await debitService.create(id, req.body);
+    const result = await debitService.create(id, reminder, req.body);
     if (result.error) {
       return next(createErrors(400, result.error.message));
     }
