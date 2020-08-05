@@ -217,10 +217,16 @@ const verifyPartnerAccount = async ({ sender, receiver, partnerCode }) => {
         code: partnerCode,
       },
     });
+    if (!partner) {
+      logger.info('Partner is not valid');
+      return {
+        error: new Error('Partner is not valid'),
+      };
+    }
     const foundReceiver = await getCustomerInfoPartner(
       receiver,
-      partner.oublic_key,
-      config.our_private_pgp_key
+      config.sangle_pgp_public_key,
+      config.my_pgp_private_key
     );
     if (foundReceiver.error) {
       return {

@@ -48,11 +48,6 @@ router.post(
   verifyPartnerAccount
 );
 
-router.post(
-  '/partner',
-  [body('message').isString(), body('privateKey').isString()],
-  validateRequest,
-  transactionPartner
-);
+router.post('/partner', validateRequest, transactionPartner);
 
 module.exports = router;
