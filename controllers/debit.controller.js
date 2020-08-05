@@ -141,7 +141,7 @@ const verifyOTP = async (req, res, next) => {
     redisClient.hgetall('socketIds', (err, result) => {
       console.log('Result: ', result[`Customer|${paidDebit.reminder_id}`]);
       io.to(result[`Customer|${paidDebit.creator_customer_id}`]).emit(
-        'deletDebitNoti',
+        'payDebitNoti',
         `Thông báo đã thanh toán nhắc nợ từ user ${req.user.username}`
       );
     });

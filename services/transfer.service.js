@@ -225,7 +225,7 @@ const verifyPartnerAccount = async ({ sender, receiver, partnerCode }) => {
     }
     const foundReceiver = await getCustomerInfoPartner(
       receiver,
-      config.sangle_pgp_public_key,
+      config.sangle2,
       config.my_pgp_private_key
     );
     if (foundReceiver.error) {
@@ -234,7 +234,7 @@ const verifyPartnerAccount = async ({ sender, receiver, partnerCode }) => {
       };
     }
     return {
-      result: foundReceiver.result, // Verify lại với bên cung cấp API để viết axios cho đúng
+      result: foundReceiver.result.data,
     };
   } catch (error) {
     logger.error(`Error when verify transfer internal: ${error}`);

@@ -102,6 +102,8 @@ AKNw9Qdy4xJaz/CVWiHzD/9b35mGld5lq65+xwbsIks/Q3JeNw==
 -----END PGP PUBLIC KEY BLOCK-----
 `;
 
+const myPGPPrivateKey2 = `-----BEGIN PGP PRIVATE KEY BLOCK-----\nVersion: Keybase OpenPGP v1.0.0\nComment: https://keybase.io/crypto\n\n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\nUSuSPBfljHTvTq2VEmD1gTddJ8Tiq2F9A3Y=\n=h7eh\n-----END PGP PRIVATE KEY BLOCK-----`;
+
 const generatePartnerCode = ({ id, code, name, password }) => {
   return jwt.sign(
     {
@@ -119,12 +121,11 @@ const generatePartnerCode = ({ id, code, name, password }) => {
 
 const getCustomerInfoPartner = async (accountId, partnerPublicKey, ourPrivateKey) => {
   const secretKey = 'day la secret key';
-  const myPassPhrase = 'quangle';
+  const myPassPhrase = 's2qbanking';
   //  const partnerCode = 'qBanking';
   const fakePartnerCode = 'S2Q Bank';
 
   const accountIdHashed = crypto.createHmac('SHA1', secretKey).update(accountId).digest('hex');
-  console.log('1: ', accountIdHashed);
 
   let { data: accountIdEncrypted } = await openpgp.encrypt({
     message: openpgp.message.fromText(accountId),
@@ -132,7 +133,6 @@ const getCustomerInfoPartner = async (accountId, partnerPublicKey, ourPrivateKey
   });
 
   accountIdEncrypted = accountIdEncrypted.replace(/\r/g, '\\n').replace(/\n/g, '');
-  console.log('2: ', accountIdEncrypted);
 
   const currentTime = Math.round(new Date().getTime());
   const entryTimeHashed = crypto
@@ -146,7 +146,6 @@ const getCustomerInfoPartner = async (accountId, partnerPublicKey, ourPrivateKey
   });
 
   entryTimeEncrypted = entryTimeEncrypted.replace(/\r/g, '\\n').replace(/\n/g, '');
-  console.log('3: ', entryTimeEncrypted);
 
   const {
     keys: [privateKey],
@@ -183,7 +182,6 @@ const getCustomerInfoPartner = async (accountId, partnerPublicKey, ourPrivateKey
       return config;
     },
     error => {
-      console.log('error ne', error);
       return Promise.reject(error);
     }
   );
@@ -214,116 +212,255 @@ const getCustomerInfoPartner = async (accountId, partnerPublicKey, ourPrivateKey
   }
 };
 
-getCustomerInfoPartner('09437776833040', CONFIG.sangle2, myPGPPrivateKey).then(data => {
-  console.log('Data: ', data);
-});
+// getCustomerInfoPartner('09437776833040', CONFIG.sangle2, myPGPPrivateKey2).then(data => {
+//   console.log('Data: ', data.result.data);
+// });
 
-// const transferMoneyPartner = async (transactionData, partnerPublicKey, ourPrivateKey) => {
-//   const secretKey = 'day la secret key';
-//   const myPassPhrase = 'quangle';
-//   const partnerCode = 'qBanking';
+const transferMoneyPartner = async (transactionData, partnerPublicKey, ourPrivateKey) => {
+  const secretKey = 'day la secret key';
+  const myPassPhrase = 's2qbanking';
+  const partnerCode = 'S2Q Bank';
 
-//   const dataSend = {
-//     // Điền thông tin traction data
-//   };
-//   const entryTime = Math.round(new Date().getTime());
-//   dataSend.entry_time = entryTime;
-//   const dataHashed = crypto
-//     .createHmac('SHA1', secretKey)
-//     .update(JSON.stringify(dataSend))
-//     .digest('hex');
+  const dataSend = {
+    // Điền thông tin traction data
+    toAccountId: transactionData.des_acc,
+    toFullName: transactionData.toFullName,
+    fromAccountId: transactionData.src_acc,
+    fromFullName: transactionData.username,
+    fromBankId: 'S2Q Bank',
+    transactionAmount: transactionData.amount,
+    isFeePayBySender: transactionData.isFeePayBySender,
+    fee: transactionData.fee,
+    transactioionMessage: transactionData.message,
+  };
+  const entryTime = Math.round(new Date().getTime());
+  dataSend.entry_time = entryTime;
+  const dataHashed = crypto
+    .createHmac('SHA1', secretKey)
+    .update(JSON.stringify(dataSend))
+    .digest('hex');
 
-//   const {
-//     keys: [privateKey],
-//   } = await openpgp.key.readArmored(ourPrivateKey);
+  const {
+    keys: [privateKey],
+  } = await openpgp.key.readArmored(ourPrivateKey);
 
-//   await privateKey.decrypt(myPassPhrase);
+  await privateKey.decrypt(myPassPhrase);
 
-//   let { data: digital_sign } = await openpgp.sign({
-//     message: openpgp.cleartext.fromText(JSON.stringify(dataSend)),
-//     privateKeys: [privateKey],
-//   });
+  let { data: digital_sign } = await openpgp.sign({
+    message: openpgp.cleartext.fromText(JSON.stringify(dataSend)),
+    privateKeys: [privateKey],
+  });
+  console.log('1: ', digital_sign);
 
-//   digital_sign = digital_sign.substring(
-//     digital_sign.indexOf('-----BEGIN PGP SIGNATURE-----'),
-//     digital_sign.length
-//   );
-//   digital_sign = digital_sign.replace(/\r/g, '\\n').replace(/\n/g, '');
+  digital_sign = digital_sign.substring(
+    digital_sign.indexOf('-----BEGIN PGP SIGNATURE-----'),
+    digital_sign.length
+  );
+  digital_sign = digital_sign.replace(/\r/g, '\\n').replace(/\n/g, '');
 
-//   const { data: bodyData } = await openpgp.encrypt({
-//     message: openpgp.message.fromText(JSON.stringify(dataSend)),
-//     publicKeys: (await openpgp.key.readArmored(partnerPublicKey)).keys,
-//   });
+  const { data: bodyData } = await openpgp.encrypt({
+    message: openpgp.message.fromText(JSON.stringify(dataSend)),
+    publicKeys: (await openpgp.key.readArmored(partnerPublicKey)).keys,
+  });
+  console.log('2: ', bodyData);
 
-//   const data = {
-//     data: bodyData,
-//     digital_sign,
-//     dataHashed,
-//   };
+  const data = {
+    data: bodyData,
+    digital_sign,
+    dataHashed,
+  };
 
-//   const instance = axios.create({
-//     baseURL: 'http://34.87.97.142/transactions/receiving-interbank',
-//     timeout: 5000,
-//   });
+  const instance = axios.create({
+    baseURL: 'http://34.87.97.142/transactions/receiving-interbank',
+    timeout: 5000,
+  });
 
-//   const request = instance.interceptors.request.use(
-//     config => {
-//       config.headers.x_partner_code = partnerCode;
-//       return config;
-//     },
-//     error => {
-//       console.log('error ne', error);
-//       return Promise.reject(error);
-//     }
-//   );
+  const request = instance.interceptors.request.use(
+    config => {
+      config.headers.x_partner_code = partnerCode;
+      return config;
+    },
+    error => {
+      console.log('error ne', error);
+      return Promise.reject(error);
+    }
+  );
 
-//   instance.interceptors.response.use(
-//     response => {
-//       return response;
-//     },
-//     error => {
-//       return Promise.resolve({ error });
-//     }
-//   );
+  instance.interceptors.response.use(
+    response => {
+      return response;
+    },
+    error => {
+      return Promise.resolve({ error });
+    }
+  );
 
-//   const response = await instance({
-//     method: 'post',
-//     url: '',
-//     data,
-//   });
-//   if (response && !response.error) {
-//     const ret_req = {
-//       partner_name: 'Eight',
-//       request_uri: 'http://34.87.97.142/transactions/receiving-interbank',
-//       request_header: null,
-//       request_body: data,
-//       request_time: Date.now(),
-//       signature: digital_sign,
-//       request_amount: transactionData.amount,
-//     };
-//     const ret_res = {
-//       partner_name: 'Eight',
-//       response_time: Date.now(),
-//       response_data: response.data.data,
-//       response_header: response.config.headers,
-//       signature: response.data.data.digital_sign,
-//     };
+  const response = await instance({
+    method: 'post',
+    url: '',
+    data,
+  });
+  console.log('Response: ', response);
+  if (response && !response.error) {
+    const ret_req = {
+      partner_name: 'Eight',
+      request_uri: 'http://34.87.97.142/transactions/receiving-interbank',
+      request_header: null,
+      request_body: data,
+      request_time: Date.now(),
+      signature: digital_sign,
+      request_amount: transactionData.amount,
+    };
+    const ret_res = {
+      partner_name: 'Eight',
+      response_time: Date.now(),
+      response_data: response.data.data,
+      response_header: response.config.headers,
+      signature: response.data.data.digital_sign,
+    };
 
-//     return {
-//       request: ret_req,
-//       response: ret_res,
-//       result: response.data,
-//     };
-//   }
-//   if (response && response.error && response.error.response && response.error.response.status) {
-//     return {
-//       error: new Error(response.error),
-//     };
-//   }
-// };
+    return {
+      request: ret_req,
+      response: ret_res,
+      result: response.data,
+    };
+  }
+  if (response && response.error && response.error.response && response.error.response.status) {
+    return {
+      error: new Error(response.error),
+    };
+  }
+};
+
+const sendMoney = async (transaction, ourPrivateKey, partnerPublicKey) => {
+  const secretKey = 'day la secret key';
+  const myPassPhrase = 's2qbanking';
+  const partnerCode = 'S2Q Bank';
+  const dataSend = {
+    toAccountId: transaction.des_acc,
+    toFullName: transaction.toFullName,
+    fromAccountId: transaction.src_acc,
+    fromFullName: 'Quang',
+    fromBankId: 'S2Q Bank',
+    transactionAmount: transaction.amount,
+    isFeePayBySender: transaction.isFeePayBySender,
+    fee: transaction.fee,
+    transactioionMessage: transaction.transactioionMessage,
+  };
+
+  const entryTime = Math.round(new Date().getTime());
+  dataSend.entryTime = entryTime;
+  const data_hashed = crypto
+    .createHmac('SHA1', secretKey)
+    .update(JSON.stringify(dataSend))
+    .digest('hex');
+
+  const {
+    keys: [privateKey],
+  } = await openpgp.key.readArmored(ourPrivateKey);
+  await privateKey.decrypt('s2qbanking');
+
+  let { data: digital_sign } = await openpgp.sign({
+    message: openpgp.cleartext.fromText(JSON.stringify(dataSend)),
+    privateKeys: [privateKey],
+  });
+
+  digital_sign = digital_sign.substring(
+    digital_sign.indexOf('-----BEGIN PGP SIGNATURE-----'),
+    digital_sign.length
+  );
+  digital_sign = digital_sign.replace(/\r/g, '\\n').replace(/\n/g, '');
+
+  const { data: bodyData } = await openpgp.encrypt({
+    message: openpgp.message.fromText(JSON.stringify(dataSend)),
+    publicKeys: (await openpgp.key.readArmored(partnerPublicKey)).keys,
+  });
+
+  const data = {
+    data: bodyData,
+    digital_sign,
+    data_hashed,
+  };
+
+  const instance = axios.create({
+    baseURL: 'http://34.87.97.142/transactions/receiving-interbank',
+    timeout: 5000,
+  });
+
+  const request = instance.interceptors.request.use(
+    config => {
+      config.headers.x_partner_code = partnerCode;
+      return config;
+    },
+    error => {
+      console.log('error ne', error);
+      return Promise.reject(error);
+    }
+  );
+
+  instance.interceptors.response.use(
+    response => {
+      return response;
+    },
+    error => {
+      return Promise.resolve({ error });
+    }
+  );
+
+  const response = await instance({
+    method: 'post',
+    url: '',
+    data,
+  });
+  console.log(response);
+  if (response && !response.error) {
+    const ret_req = {
+      partner_name: 'Eight',
+      request_uri: 'http://34.87.97.142/transactions/receiving-interbank',
+      request_header: null,
+      request_body: data,
+      request_time: Date.now(),
+      signature: digital_sign,
+      request_amount: transaction.amount,
+    };
+    const ret_res = {
+      partner_name: 'Eight',
+      response_time: Date.now(),
+      response_data: response.data.data,
+      response_header: response.config.headers,
+      signature: response.data.data.digital_sign,
+    };
+
+    return {
+      request: ret_req,
+      response: ret_res,
+      data: response.data,
+    };
+  }
+  if (response && response.error && response.error.response && response.error.response.status) {
+    console.error('Error: ', response.error);
+  }
+};
+
+const testTransactionData = {
+  des_acc: '09437776833040',
+  toFullName: 'Nguyen Hoang Sang',
+  src_acc: '123456789',
+  username: 'Test',
+  fromBankId: 'S2Q Bank',
+  amount: 100000,
+  isFeePayBySender: true,
+  fee: 1000,
+  message: 'Chuyển tiền liên ngân hàng',
+};
+// transferMoneyPartner(testTransactionData, CONFIG.sangle2, myPGPPrivateKey2).then(data => {
+//   console.log('Data: ', data);
+// });
+
+sendMoney(testTransactionData, myPGPPrivateKey2, CONFIG.sangle2);
 
 module.exports = {
   generatePartnerCode,
   getCustomerInfoPartner,
-  // transferMoneyPartner,
+  transferMoneyPartner,
 };
