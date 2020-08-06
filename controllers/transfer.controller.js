@@ -40,7 +40,7 @@ const verifyOTP = async (req, res, next) => {
     const { OTP } = req.body;
     const result = await transferService.verifyOTP({ OTP });
     if (result.error) {
-      return next(createErrors(400, result.error.message));
+      return next(createErrors(400, result.error));
     }
     return res.status(200).send({
       message: 'Success',
@@ -58,7 +58,10 @@ const verifyPartnerAccount = async (req, res, next) => {
       receiver: req.body.receiver_account_number,
       partnerCode: req.body.partner_code,
     });
-    res.status(200).json({
+    if (result.error) {
+      return next(createErrors(400, result.error));
+    }
+    return res.status(200).json({
       message: 'Success',
       data: result.result,
     });

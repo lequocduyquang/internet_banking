@@ -263,13 +263,13 @@ const handleTransactionPartner = async transactionData => {
     // } = transactionData;
 
     const dataSend = {
-      toAccountId: transactionData.receiverAccountNumber,
-      toFullName: transactionData.receiverFullName,
-      fromAccountId: transactionData.senderAccountNumber,
-      fromFullName: transactionData.senderAccountFullName,
+      toAccountId: transactionData.receiver_account_number,
+      toFullName: transactionData.receiver_full_name,
+      fromAccountId: transactionData.sender_account_number,
+      fromFullName: transactionData.sender_account_full_name,
       fromBankId: 'S2Q Bank',
       transactionAmount: transactionData.amount,
-      isFeePayBySender: transactionData.transferMethod === 1,
+      isFeePayBySender: transactionData.transfer_method === 1,
       fee: 1000,
       transactioionMessage: transactionData.message,
     };
@@ -277,7 +277,7 @@ const handleTransactionPartner = async transactionData => {
     // 1:
     const sender = await Customer.findOne({
       where: {
-        account_number: transactionData.senderAccountNumber,
+        account_number: transactionData.sender_account_number,
       },
     });
     if (!sender) {
@@ -295,15 +295,15 @@ const handleTransactionPartner = async transactionData => {
     // const partnerTransaction = await transferMoneyPartner(transactionData);
     // 2: Tạo 1 transaction log -> progress status = 0 (Chua thuc hien)
     const transactionLog = await TransactionLog.create({
-      transaction_type: transactionData.transactionType || 2, // PARTNER
-      transfer_method: transactionData.transferMethod || 1, // Trừ phú 1: Người gửi - 2: Người nhận
+      transaction_type: transactionData.transaction_type || 2, // PARTNER
+      transfer_method: transactionData.transfer_method || 1, // Trừ phú 1: Người gửi - 2: Người nhận
       is_actived: 1,
       is_notified: 0,
-      sender_account_number: transactionData.senderAccountNumber,
-      receiver_account_number: transactionData.receiverAccountNumber,
+      sender_account_number: transactionData.sender_account_number,
+      receiver_account_number: transactionData.receiver_account_number,
       amount: transactionData.amount,
       message: transactionData.message,
-      partner_code: transactionData.partnerCode || '',
+      partner_code: transactionData.partner_code || '',
       progress_status: 0,
     });
 
@@ -311,10 +311,10 @@ const handleTransactionPartner = async transactionData => {
     const OTPCode = new Random().integer(100000, 999999);
     const cachedData = {
       id: transactionLog.id,
-      transaction_type: transactionData.transactionType || 2,
-      transfer_method: transactionData.transferMethod || 1,
-      sender_account_number: transactionData.senderAccountNumber,
-      receiver_account_number: transactionData.receiverAccountNumber,
+      transaction_type: transactionData.transaction_type || 2,
+      transfer_method: transactionData.transfer_method || 1,
+      sender_account_number: transactionData.sender_account_number,
+      receiver_account_number: transactionData.receiver_account_number,
       amount: transactionData.amount,
     };
     await redisClient.setAsync(`Transfer:${OTPCode}`, JSON.stringify(cachedData), 'EX', 30 * 60); // Expired 30 phút
@@ -351,16 +351,17 @@ const verifyOTPPartner = async ({ OTP, transactionData }) => {
 
     console.log('Transaction type and transaction method: ', transactionType, transferMethod);
     const dataSend = {
-      toAccountId: transactionData.receiverAccountNumber,
-      toFullName: transactionData.receiverFullName,
-      fromAccountId: transactionData.senderAccountNumber,
-      fromFullName: transactionData.senderAccountFullName,
+      des_acc: transactionData.receiver_account_number,
+      toFullName: transactionData.receiver_full_name || 'Nguyen Hoang Sang',
+      src_acc: transactionData.sender_account_number,
+      username: transactionData.sender_account_full_name || 'Quang Le',
       fromBankId: 'S2Q Bank',
-      transactionAmount: transactionData.amount,
-      isFeePayBySender: transactionData.transferMethod === 1,
+      amount: transactionData.amount,
+      isFeePayBySender: transactionData.transfer_method === 1,
       fee: fee,
-      transactioionMessage: transactionData.message,
+      message: transactionData.message,
     };
+    console.log('DATA SEND: ', dataSend);
     if (transferMethod === 1) {
       const resp = await transferMoneyPartner(dataSend, config.myPGPPrivateKey2, config.sangle2);
       if (resp.data.status === 'OK') {
