@@ -43,7 +43,8 @@ const verifyOTP = async (req, res, next) => {
       return next(createErrors(400, result.error.message));
     }
     return res.status(200).send({
-      valid: result.isValid,
+      message: 'Success',
+      data: result.transaction_log,
     });
   } catch (error) {
     return next(createErrors(400, error.message));
@@ -83,10 +84,30 @@ const transactionPartner = async (req, res, next) => {
   }
 };
 
+const verifyOTPPartner = async (req, res, next) => {
+  try {
+    const { OTP, transactionData } = req.body;
+    if (!transactionData || !OTP) {
+      return next(createErrors(400, 'Transaction is not allowed'));
+    }
+    const result = await transferService.verifyOTPPartner({ OTP, transactionData });
+    if (result.error) {
+      return next(createErrors(400, result.error.message));
+    }
+    return res.status(200).send({
+      message: 'Success',
+      data: result.transaction_log,
+    });
+  } catch (error) {
+    return next(createErrors(400, error.message));
+  }
+};
+
 module.exports = {
   verifyInternalAccount,
   verifyPartnerAccount,
   transactionPartner,
   transferInternal,
   verifyOTP,
+  verifyOTPPartner,
 };

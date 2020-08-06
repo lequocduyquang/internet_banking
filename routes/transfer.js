@@ -10,6 +10,7 @@ const {
   transactionPartner,
   transferInternal,
   verifyOTP,
+  verifyOTPPartner,
 } = require('../controllers/transfer.controller');
 const { requireAuth } = require('../middleware/auth');
 
@@ -49,5 +50,6 @@ router.post(
 );
 
 router.post('/partner', validateRequest, transactionPartner);
+router.post('/partner/verify/code', validateRequest, verifyOTPPartner);
 
 module.exports = router;

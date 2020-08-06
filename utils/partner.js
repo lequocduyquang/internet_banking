@@ -124,6 +124,7 @@ const getCustomerInfoPartner = async (accountId, partnerPublicKey, ourPrivateKey
   const myPassPhrase = 's2qbanking';
   //  const partnerCode = 'qBanking';
   const fakePartnerCode = 'S2Q Bank';
+  ourPrivateKey = myPGPPrivateKey2;
 
   const accountIdHashed = crypto.createHmac('SHA1', secretKey).update(accountId).digest('hex');
 
@@ -216,7 +217,7 @@ const getCustomerInfoPartner = async (accountId, partnerPublicKey, ourPrivateKey
 //   console.log('Data: ', data.result.data);
 // });
 
-const transferMoneyPartner = async (transactionData, partnerPublicKey, ourPrivateKey) => {
+const transferMoneyPartnerV2 = async (transactionData, partnerPublicKey, ourPrivateKey) => {
   const secretKey = 'day la secret key';
   const myPassPhrase = 's2qbanking';
   const partnerCode = 'S2Q Bank';
@@ -332,10 +333,12 @@ const transferMoneyPartner = async (transactionData, partnerPublicKey, ourPrivat
   }
 };
 
-const sendMoney = async (transaction, ourPrivateKey, partnerPublicKey) => {
+const transferMoneyPartner = async (transaction, ourPrivateKey, partnerPublicKey) => {
   const secretKey = 'day la secret key';
   const myPassPhrase = 's2qbanking';
   const partnerCode = 'S2Q Bank';
+  ourPrivateKey = myPGPPrivateKey2;
+
   const dataSend = {
     toAccountId: transaction.des_acc,
     toFullName: transaction.toFullName,
@@ -358,7 +361,7 @@ const sendMoney = async (transaction, ourPrivateKey, partnerPublicKey) => {
   const {
     keys: [privateKey],
   } = await openpgp.key.readArmored(ourPrivateKey);
-  await privateKey.decrypt('s2qbanking');
+  await privateKey.decrypt(myPassPhrase);
 
   let { data: digital_sign } = await openpgp.sign({
     message: openpgp.cleartext.fromText(JSON.stringify(dataSend)),
@@ -442,22 +445,22 @@ const sendMoney = async (transaction, ourPrivateKey, partnerPublicKey) => {
   }
 };
 
-const testTransactionData = {
-  des_acc: '09437776833040',
-  toFullName: 'Nguyen Hoang Sang',
-  src_acc: '123456789',
-  username: 'Test',
-  fromBankId: 'S2Q Bank',
-  amount: 100000,
-  isFeePayBySender: true,
-  fee: 1000,
-  message: 'Chuyển tiền liên ngân hàng',
-};
-// transferMoneyPartner(testTransactionData, CONFIG.sangle2, myPGPPrivateKey2).then(data => {
-//   console.log('Data: ', data);
-// });
+// const testTransactionData = {
+//   des_acc: '09437776833040',
+//   toFullName: 'Nguyen Hoang Sang',
+//   src_acc: '123456789',
+//   username: 'Test',
+//   fromBankId: 'S2Q Bank',
+//   amount: 100000,
+//   isFeePayBySender: true,
+//   fee: 1000,
+//   message: 'Chuyển tiền liên ngân hàng',
+// };
+// // transferMoneyPartner(testTransactionData, CONFIG.sangle2, myPGPPrivateKey2).then(data => {
+// //   console.log('Data: ', data);
+// // });
 
-sendMoney(testTransactionData, myPGPPrivateKey2, CONFIG.sangle2);
+// sendMoney(testTransactionData, myPGPPrivateKey2, CONFIG.sangle2);
 
 module.exports = {
   generatePartnerCode,

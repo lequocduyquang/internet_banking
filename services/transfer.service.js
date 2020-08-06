@@ -252,20 +252,32 @@ const handleTransactionPartner = async transactionData => {
         error: new Error('Transaction data is required'),
       };
     }
-    const {
-      sender_account_number: senderAccountNumber,
-      receiver_account_number: receiverAccountNumber,
-      amount,
-      message,
-      transaction_type: transactionType,
-      transfer_method: transferMethod, // 1: tru phi nguoi gui, 2: tru phi nguoi nhan
-      partner_code: partnerCode,
-    } = transactionData;
+    // const {
+    //   sender_account_number: senderAccountNumber,
+    //   receiver_account_number: receiverAccountNumber,
+    //   amount,
+    //   message,
+    //   transaction_type: transactionType,
+    //   transfer_method: transferMethod, // 1: tru phi nguoi gui, 2: tru phi nguoi nhan
+    //   partner_code: partnerCode,
+    // } = transactionData;
+
+    const dataSend = {
+      toAccountId: transactionData.receiverAccountNumber,
+      toFullName: transactionData.receiverFullName,
+      fromAccountId: transactionData.senderAccountNumber,
+      fromFullName: transactionData.senderAccountFullName,
+      fromBankId: 'S2Q Bank',
+      transactionAmount: transactionData.amount,
+      isFeePayBySender: transactionData.transferMethod === 1,
+      fee: 1000,
+      transactioionMessage: transactionData.message,
+    };
 
     // 1:
     const sender = await Customer.findOne({
       where: {
-        account_number: senderAccountNumber,
+        account_number: transactionData.senderAccountNumber,
       },
     });
     if (!sender) {
@@ -274,24 +286,24 @@ const handleTransactionPartner = async transactionData => {
         error: new Error('Account sender is not valid'),
       };
     }
-    if (sender.account_balance < amount) {
+    if (sender.account_balance < transactionData.amount) {
       logger.info('Account balance must be >= amount');
       return {
         error: new Error('Account balance must be >= amount'),
       };
     }
-    const partnerTransaction = await transferMoneyPartner(transactionData);
+    // const partnerTransaction = await transferMoneyPartner(transactionData);
     // 2: Tạo 1 transaction log -> progress status = 0 (Chua thuc hien)
     const transactionLog = await TransactionLog.create({
-      transaction_type: transactionType || 2, // PARTNER
-      transfer_method: transferMethod || 1, // Trừ phú 1: Người gửi - 2: Người nhận
+      transaction_type: transactionData.transactionType || 2, // PARTNER
+      transfer_method: transactionData.transferMethod || 1, // Trừ phú 1: Người gửi - 2: Người nhận
       is_actived: 1,
       is_notified: 0,
-      sender_account_number: senderAccountNumber,
-      receiver_account_number: receiverAccountNumber,
-      amount,
-      message,
-      partner_code: partnerCode || '',
+      sender_account_number: transactionData.senderAccountNumber,
+      receiver_account_number: transactionData.receiverAccountNumber,
+      amount: transactionData.amount,
+      message: transactionData.message,
+      partner_code: transactionData.partnerCode || '',
       progress_status: 0,
     });
 
@@ -299,11 +311,11 @@ const handleTransactionPartner = async transactionData => {
     const OTPCode = new Random().integer(100000, 999999);
     const cachedData = {
       id: transactionLog.id,
-      transaction_type: transactionType || 2,
-      transfer_method: transferMethod || 1,
-      sender_account_number: senderAccountNumber,
-      receiver_account_number: receiverAccountNumber,
-      amount,
+      transaction_type: transactionData.transactionType || 2,
+      transfer_method: transactionData.transferMethod || 1,
+      sender_account_number: transactionData.senderAccountNumber,
+      receiver_account_number: transactionData.receiverAccountNumber,
+      amount: transactionData.amount,
     };
     await redisClient.setAsync(`Transfer:${OTPCode}`, JSON.stringify(cachedData), 'EX', 30 * 60); // Expired 30 phút
     // 4. Push email tới người thực hiện giao dịch
@@ -323,7 +335,7 @@ const handleTransactionPartner = async transactionData => {
   }
 };
 
-const verifyOTPPartner = async ({ OTP }) => {
+const verifyOTPPartner = async ({ OTP, transactionData }) => {
   try {
     const data = await redisClient.getAsync(`Transfer:${OTP}`);
     const formatedData = JSON.parse(data);
@@ -338,26 +350,29 @@ const verifyOTPPartner = async ({ OTP }) => {
     const fee = 1000;
 
     console.log('Transaction type and transaction method: ', transactionType, transferMethod);
-    let receiver = {};
-    if (transactionType === 2) {
-      if (transferMethod === 1) {
+    const dataSend = {
+      toAccountId: transactionData.receiverAccountNumber,
+      toFullName: transactionData.receiverFullName,
+      fromAccountId: transactionData.senderAccountNumber,
+      fromFullName: transactionData.senderAccountFullName,
+      fromBankId: 'S2Q Bank',
+      transactionAmount: transactionData.amount,
+      isFeePayBySender: transactionData.transferMethod === 1,
+      fee: fee,
+      transactioionMessage: transactionData.message,
+    };
+    if (transferMethod === 1) {
+      const resp = await transferMoneyPartner(dataSend, config.myPGPPrivateKey2, config.sangle2);
+      if (resp.data.status === 'OK') {
         await sender.updateBalance(-amount, fee);
-        // Gọi qua API của partner để thực hiện giao dịch
-        receiver = {}; // formatDataPartner();
-      } else {
+      }
+    } else {
+      const resp = await transferMoneyPartner(dataSend, config.myPGPPrivateKey2, config.sangle2);
+      if (resp.data.status === 'OK') {
         await sender.updateBalance(-amount, 0);
-        // Gọi qua API của partner để thực hiện giao dịch
       }
     }
-    if (!_.find(sender.list_contact, { account_number: receiver.account_number })) {
-      sender.list_contact.push({
-        reminder_name: receiver.username,
-        account_number: receiver.account_number,
-      });
-      sender.setDataValue('list_contact', sender.list_contact);
-    }
     await sender.save();
-    await receiver.save();
     const transactionLog = await TransactionLog.findOne({
       where: {
         id,
