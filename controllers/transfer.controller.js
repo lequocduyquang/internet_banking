@@ -78,6 +78,9 @@ const transactionPartner = async (req, res, next) => {
       return next(createErrors(400, 'Transaction is not allowed'));
     }
     const result = await transferService.handleTransactionPartner(transactionData);
+    if (result.error) {
+      return next(createErrors(400, result.error));
+    }
     res.status(200).json({
       message: 'Success',
       data: result.result,
