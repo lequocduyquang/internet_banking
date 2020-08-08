@@ -102,7 +102,7 @@ const verifyOTP = async ({ OTP }) => {
       logger.error('OTP Code is wrong');
       return {};
     }
-    const [sender, receiver] = Promise.all([
+    const [sender, receiver] = await Promise.all([
       Customer.findOne({
         where: {
           account_number: formatedData.sender_account_number,
@@ -135,6 +135,7 @@ const verifyOTP = async ({ OTP }) => {
       },
     });
     debit.setDataValue('is_actived', 1); // Đã thanh toán
+    debit.setDataValue('payment_status', 1); // Đã thanh toán
     await debit.save();
     return {
       debit,
@@ -159,12 +160,8 @@ const paid = async ({ customer, debitId }) => {
         id: debitId,
       },
     });
-    if (_.isEmpty(debit)) {
-      logger.info('Debit id is not found');
-      return {};
-    }
     // 1. Xác nhân tài khoản người nợ + người nhắc
-    const [beReminder, reminder] = Promise.all([
+    const [beReminder, reminder] = await Promise.all([
       Customer.findOne({
         where: {
           id: customer.id,

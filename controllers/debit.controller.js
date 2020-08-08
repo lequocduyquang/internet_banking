@@ -98,6 +98,7 @@ const deleteDebit = async (req, res, next) => {
         id: foundDebit.reminder_id,
       },
     });
+    foundDebit.setDataValue('message', req.body.message);
     foundDebit.setDataValue('is_actived', 0);
     await foundDebit.save();
     const emailContent = `
@@ -115,7 +116,7 @@ const deleteDebit = async (req, res, next) => {
 
 const payDebit = async (req, res, next) => {
   try {
-    const debitId = req.body;
+    const { debitId } = req.body;
     const customer = req.user;
     const debitVal = await debitService.paid({ customer, debitId });
     return res.status(200).send({
