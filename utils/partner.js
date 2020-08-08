@@ -1,3 +1,4 @@
+/* eslint-disable no-underscore-dangle */
 /* eslint-disable consistent-return */
 /* eslint-disable camelcase */
 /* eslint-disable no-unused-vars */
@@ -6,6 +7,7 @@ const jwt = require('jsonwebtoken');
 const axios = require('axios');
 const crypto = require('crypto');
 const openpgp = require('openpgp');
+const moment = require('moment');
 const CONFIG = require('../config');
 
 const myPGPPrivateKey = `-----BEGIN PGP PRIVATE KEY BLOCK-----
@@ -462,8 +464,89 @@ const transferMoneyPartner = async (transaction, ourPrivateKey, partnerPublicKey
 
 // sendMoney(testTransactionData, myPGPPrivateKey2, CONFIG.sangle2);
 
+const getCustomerInfoS2QBank = async account_number => {
+  const timestamp = moment().unix();
+  const security_key = 'qbanking';
+  const baseURL = 'https://s2q-ibanking.herokuapp.com';
+  const data = JSON.stringify(account_number);
+  try {
+    const response = await axios({
+      method: 'get',
+      url: `public/${account_number}`,
+      baseURL: baseURL,
+      headers: {
+        timestamp,
+        security_key,
+        hash: crypto
+          .createHash('sha256')
+          .update(timestamp + data + security_key)
+          .digest('hex'),
+      },
+    });
+    return response.data;
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+// getCustomerInfoS2QBank('1596891106').then(data => {
+//   console.log('Data: ', data);
+// });
+
+const transferMoneyS2QBank = async (account_number, amount, message) => {
+  const timestamp = moment().unix();
+  const security_key = 'qbanking';
+  const private_key = CONFIG.myRSAPrivateKey;
+  const baseURL = 'https://s2q-ibanking.herokuapp.com';
+  const data = {
+    source_account: '12345',
+    destination_account: account_number,
+    source_bank: 'qbanking',
+    description: message,
+    feePayBySender: true,
+    fee: 1000,
+    amount,
+  };
+  const _data = JSON.stringify(data);
+  try {
+    // create signature
+    const privateKey = private_key.replace(/\\n/g, '\n');
+    const signer = crypto.createSign('sha256');
+    signer.update(_data);
+    const signature = signer.sign(privateKey, 'hex');
+
+    // send request
+    const result = await axios({
+      method: 'post',
+      url: 'public/transfer',
+      baseURL: baseURL,
+      headers: {
+        timestamp,
+        security_key,
+        hash: crypto
+          .createHash('sha256')
+          .update(timestamp + _data + security_key)
+          .digest('hex'),
+      },
+      data: {
+        data,
+        signature,
+      },
+    });
+    return result.data;
+  } catch (error) {
+    console.log(error.message);
+  }
+};
+
+// transferMoneyS2QBank('1596891106', 10000).then(data => {
+//   console.log('Data: ', data);
+// });
+
 module.exports = {
   generatePartnerCode,
   getCustomerInfoPartner,
   transferMoneyPartner,
+  getCustomerInfoS2QBank,
+  transferMoneyS2QBank,
 };

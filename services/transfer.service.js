@@ -1,3 +1,4 @@
+/* eslint-disable consistent-return */
 const _ = require('lodash');
 const { Random } = require('random-js');
 const config = require('../config');
@@ -9,7 +10,12 @@ const { sendMail } = require('../utils/mailer');
 
 const { Customer, TransactionLog, Partner } = models;
 const { redisClient } = require('../libs/redis');
-const { getCustomerInfoPartner, transferMoneyPartner } = require('../utils/partner');
+const {
+  getCustomerInfoPartner,
+  transferMoneyPartner,
+  getCustomerInfoS2QBank,
+  transferMoneyS2QBank,
+} = require('../utils/partner');
 
 const verifyInternalAccount = async ({ sender, receiver }) => {
   try {
@@ -223,19 +229,27 @@ const verifyPartnerAccount = async ({ sender, receiver, partnerCode }) => {
         error: new Error('Partner is not valid'),
       };
     }
-    const foundReceiver = await getCustomerInfoPartner(
-      receiver,
-      config.sangle2,
-      config.my_pgp_private_key
-    );
-    if (foundReceiver.error) {
+    if (partner.name === 'SANGLE') {
+      const foundReceiver = await getCustomerInfoPartner(
+        receiver,
+        config.sangle2,
+        config.my_pgp_private_key
+      );
+      if (foundReceiver.error) {
+        return {
+          error: new Error(foundReceiver.error),
+        };
+      }
       return {
-        error: new Error(foundReceiver.error),
+        result: foundReceiver.result.data,
       };
     }
-    return {
-      result: foundReceiver.result.data,
-    };
+    if (partner.name === 'QUANGNGUYEN') {
+      const foundReceiver = await getCustomerInfoS2QBank(receiver);
+      return {
+        result: foundReceiver,
+      };
+    }
   } catch (error) {
     logger.error(`Error when verify transfer internal: ${error}`);
     return {
@@ -316,6 +330,7 @@ const handleTransactionPartner = async transactionData => {
       sender_account_number: transactionData.sender_account_number,
       receiver_account_number: transactionData.receiver_account_number,
       amount: transactionData.amount,
+      partner_code: transactionData.partner_code,
     };
     await redisClient.setAsync(`Transfer:${OTPCode}`, JSON.stringify(cachedData), 'EX', 30 * 60); // Expired 30 phút
     // 4. Push email tới người thực hiện giao dịch
@@ -344,6 +359,55 @@ const verifyOTPPartner = async ({ OTP, transactionData }) => {
         account_number: formatedData.sender_account_number,
       },
     });
+    if (formatedData.partner_code === 'QUANGNGUYEN') {
+      const transactionType = formatedData.transaction_type;
+      const transferMethod = formatedData.transfer_method;
+      const { amount, id } = formatedData;
+      const fee = 1000;
+
+      console.log('Transaction type and transaction method: ', transactionType, transferMethod);
+      // const dataSend = {
+      //   des_acc: transactionData.receiver_account_number,
+      //   toFullName: transactionData.receiver_full_name || 'Nguyen Hoang Sang',
+      //   src_acc: transactionData.sender_account_number,
+      //   username: transactionData.sender_account_full_name || 'Quang Le',
+      //   fromBankId: 'S2Q Bank',
+      //   amount: transactionData.amount,
+      //   isFeePayBySender: transactionData.transfer_method === 1,
+      //   fee: fee,
+      //   message: transactionData.message,
+      // };
+      if (transferMethod === 1) {
+        const resp = await transferMoneyS2QBank(
+          transactionData.receiver_account_number,
+          transactionData.amount,
+          transactionData.message
+        );
+        if (resp.data) {
+          await sender.updateBalance(-amount, fee);
+        }
+      } else {
+        const resp = await transferMoneyS2QBank(
+          transactionData.receiver_account_number,
+          transactionData.amount,
+          transactionData.message
+        );
+        if (resp.data) {
+          await sender.updateBalance(-amount, 0);
+        }
+      }
+      await sender.save();
+      const transactionLog = await TransactionLog.findOne({
+        where: {
+          id,
+        },
+      });
+      transactionLog.setDataValue('progress_status', 1);
+      await transactionLog.save();
+      return {
+        transaction_log: transactionLog,
+      };
+    }
     const transactionType = formatedData.transaction_type;
     const transferMethod = formatedData.transfer_method;
     const { amount, id } = formatedData;
