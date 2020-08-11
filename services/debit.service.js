@@ -114,13 +114,13 @@ const verifyOTP = async ({ OTP }) => {
         },
       }),
     ]);
-    const transactionType = formatedData.transaction_type;
+    // const transactionType = formatedData.transaction_type;
 
-    if (transactionType === 3) {
-      await beReminder.updateBalance(parseInt(formatedData.amount, 10) * -1, 0);
-      await reminder.updateBalance(parseInt(formatedData.amount, 10), 0);
-    }
+    // if (transactionType === 3) {
+    // }
+    await beReminder.updateBalance(parseInt(formatedData.amount, 10) * -1, 0);
     await beReminder.save();
+    await reminder.updateBalance(parseInt(formatedData.amount, 10), 0);
     await reminder.save();
     const transactionLog = await TransactionLog.findOne({
       where: {
@@ -169,7 +169,7 @@ const paid = async ({ customer, debitId }) => {
       }),
       Customer.findOne({
         where: {
-          id: debit.reminder_id,
+          id: debit.creator_customer_id,
         },
       }),
     ]);
