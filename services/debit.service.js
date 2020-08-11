@@ -102,7 +102,7 @@ const verifyOTP = async ({ OTP }) => {
       logger.error('OTP Code is wrong');
       return {};
     }
-    const [sender, receiver] = await Promise.all([
+    const [beReminder, reminder] = await Promise.all([
       Customer.findOne({
         where: {
           account_number: formatedData.sender_account_number,
@@ -117,11 +117,11 @@ const verifyOTP = async ({ OTP }) => {
     const transactionType = formatedData.transaction_type;
 
     if (transactionType === 3) {
-      await sender.updateBalance(-formatedData.amount, 0);
-      await receiver.updateBalance(formatedData.amount, 0);
+      await beReminder.updateBalance(parseInt(formatedData.amount, 10) * -1, 0);
+      await reminder.updateBalance(parseInt(formatedData.amount, 10), 0);
     }
-    await sender.save();
-    await receiver.save();
+    await beReminder.save();
+    await reminder.save();
     const transactionLog = await TransactionLog.findOne({
       where: {
         id: formatedData.transaction_id,
