@@ -1,4 +1,5 @@
 const _ = require('lodash');
+const jwt = require('jsonwebtoken');
 const { Random } = require('random-js');
 const bcrypt = require('bcryptjs');
 const models = require('../models');
@@ -13,6 +14,7 @@ const sendTokenResponse = async user => {
   // Create token
   const accessToken = await user.getAccessToken();
   const refreshToken = await user.getRefreshToken();
+  await redisClient.setAsync(`RefreshToken:${user.email}`, refreshToken, 'EX', 604800);
   return {
     user,
     accessToken,
@@ -336,6 +338,25 @@ const reset = async ({ newPassword, email }) => {
   }
 };
 
+const refresh = async ({ refreshToken }) => {
+  const payload = jwt.verify(refreshToken, process.env.JWT_REFRESH_SECRET);
+  const cred = await redisClient.getAsync(`RefreshToken:${payload.email}`);
+  if (refreshToken !== cred) {
+    return {
+      error: new Error(ErrorCode.INVALID_REFRESH_TOKEN),
+    };
+  }
+  const user = await Customer.findOne({
+    where: {
+      id: payload.id,
+    },
+  });
+  // Clear refresh token in redis
+  await redisClient.delAsync(`RefreshToken:${payload.email}`);
+  const data = await sendTokenResponse(user);
+  return data;
+};
+
 module.exports = {
   registerEmployee,
   registerAdmin,
@@ -350,4 +371,5 @@ module.exports = {
   sendEmailCustomer,
   reset,
   verifyOTP,
+  refresh,
 };

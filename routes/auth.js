@@ -15,6 +15,7 @@ const {
   forgotPasswordCustomer,
   resetPasswordCustomer,
   verifyOTP,
+  refresh,
 } = require('../controllers/auth.controller');
 const { requireAuth } = require('../middleware/auth');
 
@@ -133,5 +134,7 @@ router.put(
   validateRequest,
   resetPasswordCustomer
 );
+
+router.post('/refresh', [body('refreshToken').isString()], refresh);
 
 module.exports = router;

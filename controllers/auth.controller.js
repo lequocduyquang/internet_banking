@@ -228,6 +228,26 @@ const resetPasswordCustomer = async (req, res, next) => {
   }
 };
 
+const refresh = async (req, res, next) => {
+  try {
+    const { refreshToken } = req.body;
+    if (!refreshToken) {
+      return next(createErrors(400, 'INVALID_REFRESH_TOKEN'));
+    }
+    const result = await authService.refresh({ refreshToken });
+    if (result.error) {
+      return next(createErrors(400, result.error.message));
+    }
+    return res.status(200).send({
+      user: result.user,
+      accessToken: result.accessToken,
+      refreshToken: result.refreshToken,
+    });
+  } catch (error) {
+    return next(createErrors(400, error.message));
+  }
+};
+
 module.exports = {
   registerEmployee,
   registerAdmin,
@@ -242,4 +262,5 @@ module.exports = {
   forgotPasswordCustomer,
   resetPasswordCustomer,
   verifyOTP,
+  refresh,
 };
