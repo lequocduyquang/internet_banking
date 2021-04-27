@@ -64,7 +64,7 @@
     "qs": "^6.9.4",
     "query-string": "^6.13.1",
     "random-js": "^2.1.0",
-    "redis": "^3.0.2",
+    "redis": "^3.1.1",
     "sequelize": "^5.21.9",
     "sequelize-paginate": "^1.1.6",
     "socket.io": "^2.3.0",
